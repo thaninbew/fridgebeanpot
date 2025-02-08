@@ -19,10 +19,6 @@ export function AuthProvider({ children }) {
 
   const handleSuccessfulAuth = async (session) => {
     setUser(session?.user ?? null);
-    if (session?.user) {
-      // Add first item to inventory for new users
-      await storageAPI.addInventoryItem('Welcome Item');
-    }
     setLoading(false);
   };
 
@@ -49,13 +45,16 @@ export function AuthProvider({ children }) {
       });
       if (error) throw error;
 
-      // If signup successful, immediately sign in
+      // If signup successful, immediately sign in and add welcome item
       if (data.user) {
         const { error: signInError } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
         if (signInError) throw signInError;
+
+        // Add welcome item to inventory for new users
+        await storageAPI.addInventoryItem('Welcome Item');
       }
 
       return { data, error: null };
