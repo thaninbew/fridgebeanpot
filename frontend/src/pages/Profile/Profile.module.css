@@ -22,11 +22,7 @@
     border: 1px solid;
 }
 
-.profilePic, h1 {
+.profilePic {
     position: absolute;
     margin: 20vw 0 0 26px;
-}
-
-h1 {
-    padding-left:50vw;
 }
