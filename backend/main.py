@@ -106,4 +106,8 @@ async def protected_route(token: str = Depends(oauth2_scheme)):
             "user_email": user.user.email
         }
     except Exception as e:
-        raise HTTPException(status_code=401, detail="Invalid authentication credentials") 
+        raise HTTPException(status_code=401, detail="Invalid authentication credentials")
+
+@app.get("/")
+async def root():
+    return {"message": "Server is running!"} 
