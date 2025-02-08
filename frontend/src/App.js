@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import FridgePage from './pages/fridge';
 import './App.css';
 
 // Protected Route wrapper
@@ -53,7 +54,7 @@ function App() {
             path="/dashboard"
             element={
               <PrivateRoute>
-                <div>Dashboard (Protected Route)</div>
+                <FridgePage />
               </PrivateRoute>
             }
           />
