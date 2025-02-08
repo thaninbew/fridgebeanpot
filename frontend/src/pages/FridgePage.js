@@ -13,6 +13,7 @@ import FridgeContainer from '../components/FridgeContainer';
 import InventoryContainer from '../components/InventoryContainer';
 import { storageAPI } from '../lib/storageApi';
 import { useAuth } from '../contexts/AuthContext';
+import Navbar from '../components/Navbar';
 
 export default function FridgePage() {
   const [fridgeItems, setFridgeItems] = useState([]);
@@ -231,7 +232,7 @@ export default function FridgePage() {
       collisionDetection={pointerWithin}
       modifiers={[restrictToWindowEdges]}
     >
-      <div className="container mx-auto px-4 py-8 min-h-screen touch-none">
+      <div className="container mx-auto px-4 py-8 min-h-screen touch-none pb-24">
         <h1 className="text-3xl font-bold mb-8">My Fridge</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
@@ -255,6 +256,7 @@ export default function FridgePage() {
           </div>
         ) : null}
       </DragOverlay>
+      <Navbar />
     </DndContext>
   );
 } 
