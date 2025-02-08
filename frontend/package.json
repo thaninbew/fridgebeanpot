@@ -1,37 +1,35 @@
 {
-  "name": "react-pwa-boilerplate",
-  "version": "1.0.0",
-  "description": "ReactPWA Minimal boilerplate",
-  "type": "module",
-  "scripts": {
-    "dev": "reactpwa dev",
-    "build": "reactpwa build",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "Tirth Bodawala <tirthbodawala@atyantik.com>",
-  "license": "ISC",
+  "name": "my-app",
+  "version": "0.1.0",
+  "private": true,
   "dependencies": {
-    "@reactpwa/cli": "^1.0.36-alpha.0",
-    "@reactpwa/core": "^1.0.36-alpha.0",
-    "bulma": "^0.9.4",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "cra-template-pwa": "2.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-scripts": "5.0.1"
   },
-  "devDependencies": {
-    "@types/react": "^18.0.25",
-    "@types/react-dom": "^18.0.9",
-    "eslint-config-reactpwa": "^1.0.35-alpha.0",
-    "eslint-plugin-jest": "^27.1.6",
-    "eslint-plugin-testing-library": "^5.9.1",
-    "pre-commit": "^1.2.2"
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
-  "pre-commit": {
-    "run": [
-      "lint:fix",
-      "lint"
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
     ]
   }
 }
