@@ -1,0 +1,18 @@
+{
+  "apps": [
+    {
+      "name": "reactpwa",
+      "exec_mode": "cluster",
+      "instances": 2,
+      "script": "dist/server.cjs",
+      "output": "./logs/reactpwa-stdout.log",
+      "error": "./logs/reactpwa-error.err",
+      "log_type": "raw",
+      "pmx": true,
+      "port": 3000,
+      "env": {
+        "NODE_ENV": "production"
+      }
+    }
+  ]
+}

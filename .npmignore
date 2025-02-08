@@ -64,13 +64,8 @@ typings/
 # Ignore the etc folders created by
 etc/
 
-# Do not add dist/lib to git
+# Do not add dist to git
 dist
 
 # Ignore sass cache
 .sass-cache
-
-.DS_Store
-
-.do
-

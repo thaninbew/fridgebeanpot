@@ -1,0 +1,29 @@
+{
+  "root": true,
+  "extends": [
+    "reactpwa",
+    "plugin:testing-library/react"
+  ],
+  "rules": {
+    "max-len": ["error", { "code": 120 }]
+  },
+  "plugins": [
+    "@typescript-eslint",
+    "import",
+    "jest",
+    "testing-library"
+  ],
+  "parserOptions": {
+    "project": "./tsconfig.eslint.json"
+  },
+  "overrides": [
+    {
+      "files": [
+        "__tests__/**/*.test.js"
+      ],
+      "env": {
+        "jest": true
+      }
+    }
+  ]
+}
