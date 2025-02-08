@@ -33,12 +33,35 @@ export default function InventoryContainer({ items, isOpen, onClose }) {
         className={`fixed bottom-0 left-0 right-0 w-full bg-white rounded-t-3xl shadow-lg transform transition-transform duration-300 ease-out z-20 ${
           isOpen ? 'translate-y-0' : 'translate-y-full'
         }`}
-        style={{ height: '92vh' }}
+        style={{ height: '80vh' }}
       >
-        <div className="p-6">
-          <h2 className="text-2xl font-bold mb-6">Inventory</h2>
+        {/* Close button - positioned relative to viewport */}
+        <button
+          onClick={onClose}
+          className="fixed right-6 bottom-6 bg-[#f6bd60] rounded-full p-6 shadow-lg hover:bg-[#f7c675] transition-colors z-30"
+        >
+          <svg 
+            width="24" 
+            height="24" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="3" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+
+        <div className="p-6 pb-20">
+          <h2 className="text-2xl font-bold mb-4">Inventory</h2>
           <SortableContext items={items.map(item => item.id)} strategy={rectSortingStrategy}>
-            <div className="grid grid-cols-2 gap-4 overflow-y-auto" style={{ maxHeight: 'calc(92vh - 100px)' }}>
+            <div 
+              className="grid grid-cols-2 gap-4 overflow-y-auto pr-3" 
+              style={{ maxHeight: 'calc(80vh - 120px)' }}
+            >
               {slots.map((item, index) => (
                 <div key={index}>
                   {item ? (
