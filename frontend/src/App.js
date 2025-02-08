@@ -6,6 +6,7 @@ import Signup from './pages/Signup';
 import FridgePage from './pages/FridgePage';
 import Inventory from './pages/Inventory';
 import './App.css';
+import Profile from './pages/Profile/Profile';
 
 // Protected Route wrapper
 function PrivateRoute({ children }) {
@@ -41,6 +42,15 @@ function App() {
             element={
               <PublicRoute>
                 <Inventory />
+              </PublicRoute>
+            }
+          />
+
+          <Route
+            path="/Profile"
+            element={
+              <PublicRoute>
+                <Profile />
               </PublicRoute>
             }
           />
