@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
-export default function Navbar() {
+export default function Navbar({ onInventoryClick }) {
     const [activeButton, setActiveButton] = useState(false);
     const location = useLocation();
 
@@ -28,19 +29,20 @@ export default function Navbar() {
                         </button>
                     </Link>
 
-                    <Link to='/inventory'>
-                        <button 
-                            type="button" 
-                            className="items-center justify-center px-6" 
-                            onClick={() => handleButtonClick(2)}
-                        >
-                            <img 
-                                src="/nav/inventory.svg" 
-                                alt="Inventory"
-                                className={`${activeButton === 2 || location.pathname === '/inventory' ? 'filter brightness-0' : ''}`} 
-                            />
-                        </button>
-                    </Link>
+                    <button 
+                        type="button" 
+                        className="items-center justify-center px-6" 
+                        onClick={() => {
+                            handleButtonClick(2);
+                            onInventoryClick();
+                        }}
+                    >
+                        <img 
+                            src="/nav/inventory.svg" 
+                            alt="Inventory"
+                            className={`${activeButton === 2 ? 'filter brightness-0' : ''}`} 
+                        />
+                    </button>
 
                     <Link to='/explore'>
                         <button 
@@ -74,3 +76,7 @@ export default function Navbar() {
         </div>
     );
 }
+
+Navbar.propTypes = {
+    onInventoryClick: PropTypes.func
+};
