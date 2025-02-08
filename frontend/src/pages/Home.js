@@ -1,4 +1,20 @@
+import { storageAPI } from '../lib/storageApi';
+
+const { data: fridgeItems } = await storageAPI.getFridgeItems();
+const { data: inventoryItems } = await storageAPI.getInventoryItems();  // example of usage of getFridgeItems and getInventoryItems functions imports
+
 export default function Home() {
+  // // Example implementation of usage of moveToFridge function
+  // const handleMoveToFridge = async (itemId) => {
+  //   const { error } = await moveToFridge(itemId);
+  //   if (error) {
+  //     toast.error(error.message); 
+  //     return;
+  //   }
+  //   // Refresh both fridge and inventory lists
+  //   await Promise.all([refreshFridge(), refreshInventory()]);
+  // };
+
   return (
     <div className="w-screen h-screen relative bg-[#f8f5ec] overflow-hidden flex flex-col items-center">
       <div className="absolute top-[20vh] left-50% text-center text-black text-[65px] font-semibold">

@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { checkAndAddFirstLoginItem } from '../lib/fridgeApi';
+import { storageAPI } from '../lib/storageApi';
 
 const AuthContext = createContext({});
 
@@ -20,7 +20,10 @@ export function AuthProvider({ children }) {
   const handleSuccessfulAuth = async (session) => {
     setUser(session?.user ?? null);
     if (session?.user) {
-      await checkAndAddFirstLoginItem();
+      const { data: fridgeItems } = await storageAPI.getFridgeItems();
+      if (!fridgeItems || fridgeItems.length === 0) {
+        await storageAPI.addFridgeItem('WelcomeItem');
+      }
     }
     setLoading(false);
   };
