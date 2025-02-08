@@ -18,7 +18,7 @@ export default function Login() {
       setLoading(true);
       const { error } = await signIn({ email, password });
       if (error) throw error;
-      navigate('/dashboard');
+      navigate('/fridge');
     } catch (error) {
       setError(error.message);
     } finally {

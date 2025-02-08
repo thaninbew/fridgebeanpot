@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import FridgePage from './pages/FridgePage';
 import './App.css';
 
 // Protected Route wrapper
@@ -16,7 +17,7 @@ function PrivateRoute({ children }) {
   return user ? children : <Navigate to="/login" />;
 }
 
-// Public Route wrapper (redirects to dashboard if already authenticated)
+// Public Route wrapper (redirects to fridge if already authenticated)
 function PublicRoute({ children }) {
   const { user, loading } = useAuth();
   
@@ -24,7 +25,7 @@ function PublicRoute({ children }) {
     return <div>Loading...</div>;
   }
   
-  return !user ? children : <Navigate to="/dashboard" />;
+  return !user ? children : <Navigate to="/fridge" />;
 }
 
 function App() {
@@ -50,10 +51,10 @@ function App() {
             }
           />
           <Route
-            path="/dashboard"
+            path="/fridge"
             element={
               <PrivateRoute>
-                <div>Dashboard (Protected Route)</div>
+                <FridgePage />
               </PrivateRoute>
             }
           />
