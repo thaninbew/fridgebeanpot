@@ -24,4 +24,26 @@ module.exports = {
   plugins: [
     require('@tailwindcss/forms'),
   ],
+
+  theme: {
+    extend: {
+      keyframes: {
+        //for the popup sliding up from the bottom
+        slideUp: {
+          '0%': { transform: 'translateY(100%)' },
+          '100%': { transform: 'translateY(0)' },
+        },
+        //for the rest of the content moving up a bit
+        contentSlideUp: {
+          '0%': { transform: 'translateY(0)' },
+          '100%': { transform: 'translateY(-13vh)' },
+        },
+      },
+      animation: {
+        slideUp: 'slideUp 1s ease-out forwards',
+        contentSlideUp: 'contentSlideUp 1s ease-out forwards',
+      },
+    },
+  },
+  plugins: [],
 } 

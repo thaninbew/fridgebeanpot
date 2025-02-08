@@ -1,115 +1,67 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { EnvelopeIcon, LockClosedIcon } from '@heroicons/react/24/outline';
-import { useAuth } from '../contexts/AuthContext';
+import { IoMdArrowDropright } from "react-icons/io";
 
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-  const { signIn } = useAuth();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      setError('');
-      setLoading(true);
-      const { error } = await signIn({ email, password });
-      if (error) throw error;
-      navigate('/dashboard');
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign in to your account
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Or{' '}
-            <Link to="/signup" className="font-medium text-primary-600 hover:text-primary-500">
-              create a new account
-            </Link>
-          </p>
+    <div className="relative w-screen h-screen bg-[#f8f5ec] overflow-hidden">
+      {/* Header Content */}
+      <div className="absolute top-0 left-0 right-0 z-10 animate-contentSlideUp">
+        <div
+          className="absolute left-1/2 transform -translate-x-1/2"
+          style={{ top: "17vh", width: "60vw" }}
+        >
+          <h1 className="text-black text-[65px] font-semibold ">fridge.</h1>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && (
-            <div className="rounded-md bg-red-50 p-4">
-              <p className="text-sm text-red-700">{error}</p>
-            </div>
-          )}
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label htmlFor="email" className="sr-only">
-                Email address
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <EnvelopeIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-                </div>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  className="appearance-none rounded-none relative block w-full pl-10 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
-                  placeholder="Email address"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <LockClosedIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-                </div>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  className="appearance-none rounded-none relative block w-full pl-10 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-            </div>
-          </div>
+        {/* You can include your SVG here */}
+        <div className="flex items-center justify-center mt-[19vh]">
+          <img
+            src="/bean-fridge.svg"
+            alt="Logo"
+            className="w-[50vw] h-[50vh]"
+          />
+        </div>
+      </div>
 
-          <div className="flex items-center justify-between">
-            <div className="text-sm">
-              <Link to="/forgot-password" className="font-medium text-primary-600 hover:text-primary-500">
-                Forgot your password?
-              </Link>
-            </div>
-          </div>
+      {/* Login Popup */}
+      <div className="fixed bottom-0 left-0 right-0 w-screen h-[45vh] bg-[#ffc964] rounded-tl-[30px] rounded-tr-[30px] animate-slideUp">
+        {/* Wrap header and form in a container that's 80vw wide and centered */}
+        <div className="w-[80vw] mx-auto">
+          <div className="mt-10 mb-7 text-left text-4xl font-bold ml-3">Log In</div>
+          <form className="flex flex-col items-center">
+            <input
+              type="text"
+              placeholder="Username"
+              className="text-center mb-5 w-full h-[50px] bg-[#f8f5ec] rounded-[56px] shadow-[0px_4px_0px_0px_rgba(0,0,0,0.96)]"
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              className="text-center mb-5 w-full h-[50px] bg-[#f8f5ec] rounded-[56px] shadow-[0px_4px_0px_0px_rgba(0,0,0,0.96)]"
+            />
 
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
-            >
-              {loading ? 'Signing in...' : 'Sign in'}
-            </button>
-          </div>
-        </form>
+            <div className="w-[80vw] flex justify-between items-center mt-1">
+              <div className="flex flex-col justify-left h-[55px] float-start ml-2">
+                <a href="/" className="text-[#c55810] font-medium text-[16px] hover:underline">
+                  Forgot Password
+                </a>
+                <a href="/login" className="text-[#c55810] font-medium text-[16px] hover:underline">
+                  Sign In
+                </a>
+              </div>
+              <button
+                type="submit"
+                className="w-[25vw] h-[55px] bg-[#ffdc90] rounded-[50px] shadow-[0px_3px_0px_0px_rgba(0,0,0,1)]
+                   active:shadow-[inset_0px_1px_0px_rgba(0,0,0,1)] border border-black
+                   transition-shadow duration-150 transform active:translate-y-1 flex items-center justify-center"
+              >
+                <span className="text-black font-bold text-[28px] flex items-center ml-2">
+                  GO <IoMdArrowDropright />
+                </span>
+              </button>
+            </div>
+
+          </form>
+        </div>
       </div>
     </div>
   );
-} 
+}
