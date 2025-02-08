@@ -1,0 +1,32 @@
+@import "../../vars.css";
+
+.profile {
+
+}
+
+.profileHeader {
+    flex-grow: 2;
+    background-color: var(--yellow);
+    height: 61vw;
+    max-height: 400px;
+
+}
+
+.profilePic {
+    border-radius: 50%;
+    background-color: var(--offwhite);
+    width: 33vw;
+    height: 33vw;
+    max-height: 200px;
+    max-width: 200px;
+    border: 1px solid;
+}
+
+.profilePic, h1 {
+    position: absolute;
+    margin: 20vw 0 0 26px;
+}
+
+h1 {
+    padding-left:50vw;
+}

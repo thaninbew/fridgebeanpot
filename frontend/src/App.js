@@ -6,6 +6,7 @@ import Signup from './pages/Signup';
 import FridgePage from './pages/FridgePage';
 import Inventory from './pages/Inventory';
 import './App.css';
+import Profile from './pages/Profile/Profile';
 import Map from './pages/Explore/Map';
 import Recs from './pages/Explore/Recs';
 
@@ -20,8 +21,8 @@ function PrivateRoute({ children }) {
   return user ? children : <Navigate to="/login" />;
 }
 
-// Public Route wrapper (redirects to fridge if already authenticated)
-function PublicRoute({ children }) {
+// Auth Route wrapper (only redirects auth pages when logged in)
+function AuthRoute({ children }) {
   const { user, loading } = useAuth();
   
   if (loading) {
@@ -39,10 +40,19 @@ function App() {
           <Route path="/" element={<Home />} />
 
           <Route
-            path="/Inventory"
+            path="/inventory"
+            element={
+              <PrivateRoute>
+                <Inventory />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/Profile"
             element={
               <PublicRoute>
-                <Inventory />
+                <Profile />
               </PublicRoute>
             }
           />
@@ -50,20 +60,21 @@ function App() {
           <Route
             path="/login"
             element={
-              <PublicRoute>
+              <AuthRoute>
                 <Login />
-              </PublicRoute>
+              </AuthRoute>
             }
           />
 
           <Route
             path="/signup"
             element={
-              <PublicRoute>
+              <AuthRoute>
                 <Signup />
-              </PublicRoute>
+              </AuthRoute>
             }
           />
+
           <Route
             path="/fridge"
             element={
@@ -72,22 +83,9 @@ function App() {
               </PrivateRoute>
             }
           />
-          <Route
-            path="/map"
-            element={
-              <PublicRoute>
-                <Map />
-              </PublicRoute>
-            }
-          />
-          <Route
-            path="/explore"
-            element={
-              <PublicRoute>
-                <Recs />
-              </PublicRoute>
-            }
-          />
+
+          <Route path="/map" element={<Map />} />
+          <Route path="/explore" element={<Recs />} />
         </Routes>
       </AuthProvider>
     </Router>
