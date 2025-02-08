@@ -28,20 +28,23 @@ module.exports = {
   theme: {
     extend: {
       keyframes: {
-        //for the popup sliding up from the bottom
         slideUp: {
           '0%': { transform: 'translateY(100%)' },
           '100%': { transform: 'translateY(0)' },
         },
-        //for the rest of the content moving up a bit
         contentSlideUp: {
           '0%': { transform: 'translateY(0)' },
           '100%': { transform: 'translateY(-7vh)' },
         },
+        fadeOutUp: {
+          '0%': { opacity: '1', transform: 'translateY(0)' },
+          '100%': { opacity: '0', transform: 'translateY(-10px)' },
+        },
       },
       animation: {
-        slideUp: 'slideUp 1s ease-out forwards',
-        contentSlideUp: 'contentSlideUp 1s ease-out forwards',
+        slideUp: 'slideUp 0.5s ease-out forwards',
+        contentSlideUp: 'contentSlideUp 0.5s ease-out forwards',
+        fadeOutUp: 'fadeOutUp 0.5s ease-out forwards',
       },
     },
   },

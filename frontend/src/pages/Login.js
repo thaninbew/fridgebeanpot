@@ -27,26 +27,31 @@ export default function Login() {
   };
 
   return (
-    <div className=" w-[100vw] h-[100vh] flex flex-row items-start">
-      <div className="absolute top-0 left-0 right-0 animate-contentSlideUp">
-        <div
-          className="absolute left-[50vw] transform -translate-x-1/2"
-          style={{ top: "15vh", width: "60vw" }}
-        >
-          <h1 className="text-black text-[65px] font-semibold ">fridge.</h1>
-        </div>
-        <div className="flex items-center justify-center mt-[17vh]">
-          <img
-            src="/bean-fridge.svg"
-            alt="Logo"
-            className="w-[50vw] h-[50vh]"
-          />
+    <div className="flex flex-col w-screen h-screen items-center">
+      <div
+        className="absolute left-1/2 transform -translate-x-1/2"
+        style={{ top: "15vh", width: "60vw" }}
+      >
+        <div className="flex flex-col items-start animate-contentSlideUp">
+          <h1 className="text-black text-[15vw] font-semibold mb-5">fridge.</h1>
+          <div className="mt-[33vh] animate-fadeOutUp">
+            <div className="text-black font-normal text-[30px]">Hungry?</div>
+            <div className="text-black text-[18px] font-light">
+              Find local restaurants near you.
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 w-screen h-[40vh] bg-[#ffc964] rounded-tl-[30px] rounded-tr-[30px] animate-slideUp">
+      <div className="w-screen h-[82vh] flex items-center justify-center animate-contentSlideUp">
+        <img src="/bean-fridge.svg" alt="Logo" className="w-[50vw] h-[50vh]" />
+      </div>
+
+      <div className="fixed bottom-0 left-0 right-0 w-screen h-[44vh] bg-[#ffc964] rounded-tl-[30px] rounded-tr-[30px] animate-slideUp">
         <div className="w-[80vw] mx-auto">
-          <div className="mt-10 mb-7 text-left text-4xl font-bold ml-3">Log In</div>
+          <div className="mt-10 mb-7 text-left text-4xl font-bold ml-3">
+            Log In
+          </div>
           {error && (
             <div className="mb-4 text-red-600 text-center font-medium">
               {error}
@@ -72,10 +77,16 @@ export default function Login() {
 
             <div className="w-[80vw] flex justify-between items-center mt-1">
               <div className="flex flex-col justify-left h-[55px] float-start ml-2">
-                <Link to="/" className="text-[#c55810] font-medium text-[16px] hover:underline">
+                <Link
+                  to="/"
+                  className="text-[#c55810] font-medium text-[16px] hover:underline"
+                >
                   Forgot Password
                 </Link>
-                <Link to="/signup" className="text-[#c55810] font-medium text-[16px] hover:underline">
+                <Link
+                  to="/signup"
+                  className="text-[#c55810] font-medium text-[16px] hover:underline"
+                >
                   Sign Up
                 </Link>
               </div>
