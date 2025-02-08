@@ -49,11 +49,11 @@ function App() {
           />
 
           <Route
-            path="/Profile"
+            path="/profile"
             element={
-              <PublicRoute>
+              <PrivateRoute>
                 <Profile />
-              </PublicRoute>
+              </PrivateRoute>
             }
           />
 
