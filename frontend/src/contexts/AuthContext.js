@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { checkAndAddFirstLoginItem } from '../lib/fridgeApi';
 
 const AuthContext = createContext({});
 
@@ -16,17 +17,21 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const handleSuccessfulAuth = async (session) => {
+    setUser(session?.user ?? null);
+    if (session?.user) {
+      await checkAndAddFirstLoginItem();
+    }
+    setLoading(false);
+  };
+
   useEffect(() => {
-    // Check active sessions
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
+      handleSuccessfulAuth(session);
     });
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
+      handleSuccessfulAuth(session);
     });
 
     return () => subscription.unsubscribe();
@@ -38,7 +43,7 @@ export function AuthProvider({ children }) {
         email,
         password,
         options: {
-          data: metadata // Additional user metadata
+          data: metadata
         }
       });
       if (error) throw error;
