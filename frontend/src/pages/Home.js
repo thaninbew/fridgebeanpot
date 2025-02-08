@@ -45,7 +45,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="w-[100vw] h-[82vh] flex flex-col items-center justify-center">
+      <div className="w-[100vw] h-[82vh] flex flex-col items-center justify-center z-10">
         <img src="/bean-fridge.svg" alt="Logo" className="w-[50vw] h-[50vh]" />
       </div>
     </div>
