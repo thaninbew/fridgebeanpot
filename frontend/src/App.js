@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import Inventory from './pages/Inventory';
 import './App.css';
 
 // Protected Route wrapper
@@ -33,6 +34,16 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path="/" element={<Home />} />
+
+          <Route
+            path="/Inventory"
+            element={
+              <PublicRoute>
+                <Inventory />
+              </PublicRoute>
+            }
+          />
+
           <Route
             path="/login"
             element={
@@ -41,6 +52,7 @@ function App() {
               </PublicRoute>
             }
           />
+
           <Route
             path="/signup"
             element={
