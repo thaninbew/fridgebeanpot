@@ -30,6 +30,19 @@ export default function FridgePage() {
       if (inventoryResponse.error) throw inventoryResponse.error;
       setInventoryItems(inventoryResponse.data || []);
       
+      // Check if this is a new user (both fridge and inventory are empty)
+      if ((!fridgeResponse.data || fridgeResponse.data.length === 0) && 
+          (!inventoryResponse.data || inventoryResponse.data.length === 0)) {
+        console.log('New user detected, adding welcome item to fridge...');
+        const welcomeResponse = await storageAPI.addFridgeItem('Welcome Bean! 🫘');
+        if (welcomeResponse.error) throw welcomeResponse.error;
+        
+        // Refresh items to show the welcome item
+        const updatedFridgeResponse = await storageAPI.getFridgeItems();
+        if (updatedFridgeResponse.error) throw updatedFridgeResponse.error;
+        setFridgeItems(updatedFridgeResponse.data || []);
+      }
+      
       setError(null);
     } catch (err) {
       console.error('Error fetching items:', err);
