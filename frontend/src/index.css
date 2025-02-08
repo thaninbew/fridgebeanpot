@@ -24,3 +24,7 @@ code {
   src: url('/public/Satoshi-Variable.ttf');
   font-weight: normal;
 }
+
+body {
+  background-color: #f8f5ec;
+}

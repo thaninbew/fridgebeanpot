@@ -1,7 +1,8 @@
+import { Link } from "react-router-dom";
+
 export default function Home() {
   return (
-    <div className="w-screen h-screen relative bg-[#f8f5ec] overflow-hidden">
-      {/* Centered container with a fixed width */}
+    <div className="w-screen h-screen relative overflow-hidden">
       <div
         className="absolute left-1/2 transform -translate-x-1/2"
         style={{ top: "17vh", width: "60vw" }}
@@ -17,25 +18,29 @@ export default function Home() {
           </div>
 
           <div className="mt-3 w-full">
-            <button
-              type="button"
-              className="w-full h-[55px] bg-[#ffdc90] rounded-[22.20px] shadow-[0px_3px_0px_0px_rgba(0,0,0,1)]
+            <Link to="/login">
+              <button
+                type="button"
+                className="w-full h-[55px] bg-[#ffdc90] rounded-[22.20px] shadow-[0px_3px_0px_0px_rgba(0,0,0,1)]
                      active:shadow-[inset_0px_1px_0px_rgba(0,0,0,1)] border border-black
                      flex justify-center items-center transition-shadow duration-150 transform active:translate-y-1"
-            >
-              <span className="text-black font-normal text-[20px]">Log In</span>
-            </button>
+              >
+                <span className="text-black font-normal text-[20px]">
+                  Log In
+                </span>
+              </button>
 
-            <button
-              type="button"
-              className="mt-3 w-full h-[55px] bg-[#ffdc90] rounded-[22.20px] shadow-[0px_3px_0px_0px_rgba(0,0,0,1)]
+              <button
+                type="button"
+                className="mt-3 w-full h-[55px] bg-[#ffdc90] rounded-[22.20px] shadow-[0px_3px_0px_0px_rgba(0,0,0,1)]
                      active:shadow-[inset_0px_1px_0px_rgba(0,0,0,1)] border border-black
                      flex justify-center items-center transition-shadow duration-150 transform active:translate-y-1"
-            >
-              <span className="text-black font-normal text-[20px]">
-                Sign up
-              </span>
-            </button>
+              >
+                <span className="text-black font-normal text-[20px]">
+                  Sign up
+                </span>
+              </button>
+            </Link>
           </div>
         </div>
       </div>
