@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import FridgeContainer from '../components/FridgeContainer';
 import InventoryContainer from '../components/InventoryContainer';
-import { getFridgeItems, checkAndAddFirstLoginItem } from '../lib/fridgeApi';
+import { storageAPI } from '../lib/storageApi';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function FridgePage() {
@@ -14,16 +14,19 @@ export default function FridgePage() {
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        // Check and add welcome item for first-time users
-        await checkAndAddFirstLoginItem();
-        
-        // Fetch fridge items
-        const { data: fridgeData, error: fridgeError } = await getFridgeItems();
-        if (fridgeError) throw fridgeError;
-        setFridgeItems(fridgeData || []);
+        // Fetch both fridge and inventory items
+        const [fridgeResponse, inventoryResponse] = await Promise.all([
+          storageAPI.getFridgeItems(),
+          storageAPI.getInventoryItems()
+        ]);
 
-        // For now, inventory items are empty until we implement the inventory API
-        setInventoryItems([]);
+        // Handle fridge items
+        if (fridgeResponse.error) throw fridgeResponse.error;
+        setFridgeItems(fridgeResponse.data || []);
+
+        // Handle inventory items
+        if (inventoryResponse.error) throw inventoryResponse.error;
+        setInventoryItems(inventoryResponse.data || []);
         
         setError(null);
       } catch (err) {
