@@ -4,6 +4,7 @@ GOOGLE_MAPS_KEY=
 SUPABASE_URL=
 SUPABASE_ANON_KEY=
 PPLX_KEY=
+OPENAI_KEY=
 ```
 
 # FastAPI Supabase Authentication Backend

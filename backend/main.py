@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, status, APIRouter, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
@@ -6,6 +6,9 @@ from typing import Optional
 from supabase import create_client, Client
 import os
 from dotenv import load_dotenv
+from geo_features import find_locations
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 
 load_dotenv()
 
@@ -44,6 +47,22 @@ class UserLogin(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+async def get_current_user(token: str = Depends(oauth2_scheme)):
+    try:
+        user = supabase.auth.get_user(token)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid authentication credentials",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        return user
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(e),
+        )
 
 # Health check endpoint
 @app.get("/")
@@ -98,15 +117,17 @@ async def get_user(token: str = Depends(oauth2_scheme)):
 
 # Protected route example
 @app.get("/protected")
-async def protected_route(token: str = Depends(oauth2_scheme)):
-    try:
-        user = supabase.auth.get_user(token)
-        return {
-            "message": "This is a protected route",
-            "user_email": user.user.email
-        }
-    except Exception as e:
-        raise HTTPException(status_code=401, detail="Invalid authentication credentials")
+async def protected_route(user = Depends(get_user)):
+    ...
+
+# Initialize limiter
+limiter = Limiter(key_func=get_remote_address)
+
+# Apply rate limit to the endpoint
+@app.get("/api/get-restaurants")
+@limiter.limit("5/minute")  # 5 requests per minute
+async def get_restaurants(request: Request, location: str, user = Depends(get_user)):
+    return find_locations(location)
 
 @app.get("/")
 async def root():
