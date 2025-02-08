@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { EnvelopeIcon, LockClosedIcon, UserIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../contexts/AuthContext';
-import Navbar from '../Components/Navbar';
+import Navbar from '../components/Navbar';
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -43,7 +43,7 @@ export default function Signup() {
       if (error) throw error;
       
       // redirect to dashboard after successful signup and auto-login
-      navigate('/dashboard');
+      navigate('/fridge');
     } catch (error) {
       setError(error.message);
     } finally {
