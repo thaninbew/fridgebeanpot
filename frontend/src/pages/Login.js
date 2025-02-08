@@ -25,7 +25,7 @@ export default function Login() {
           <form className="flex flex-col items-center">
             <input
               type="text"
-              placeholder="Username"
+              placeholder="Email"
               className="text-center mb-5 w-full h-[50px] bg-[#f8f5ec] rounded-[56px] shadow-[0px_4px_0px_0px_rgba(0,0,0,0.96)]"
             />
             <input
