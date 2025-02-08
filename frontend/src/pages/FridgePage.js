@@ -135,10 +135,16 @@ export default function FridgePage() {
         console.log('Moving between containers:', {
           from: sourceContainer,
           to: destinationContainer,
-          itemId: active.id
+          itemId: active.id,
+          position: position
         });
         if (destinationContainer === 'fridge') {
-          const response = await storageAPI.moveToFridge(active.id);
+          // When moving to fridge, we need the target position
+          if (typeof position !== 'number') {
+            console.log('Missing position for fridge move');
+            return;
+          }
+          const response = await storageAPI.moveToFridge(active.id, position);
           if (response?.error) throw response.error;
         } else {
           const response = await storageAPI.moveToInventory(active.id);

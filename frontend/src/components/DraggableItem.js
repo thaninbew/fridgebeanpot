@@ -1,13 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useSortable } from '@dnd-kit/sortable';
+import { useDroppable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 
 export default function DraggableItem({ item, index, container, className, textClassName }) {
   const {
     attributes,
     listeners,
-    setNodeRef,
+    setNodeRef: setSortableRef,
     transform,
     transition,
     isDragging,
@@ -21,6 +22,22 @@ export default function DraggableItem({ item, index, container, className, textC
     }
   });
 
+  // Make the item droppable as well
+  const { setNodeRef: setDroppableRef, isOver } = useDroppable({
+    id: item.id,
+    data: {
+      container,
+      item,
+      index
+    }
+  });
+
+  // Combine the refs
+  const setRefs = (node) => {
+    setSortableRef(node);
+    setDroppableRef(node);
+  };
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -28,11 +45,11 @@ export default function DraggableItem({ item, index, container, className, textC
     cursor: 'grab'
   };
 
-  const isOverCurrent = over?.id === item.id;
+  const isOverCurrent = isOver;
 
   return (
     <div
-      ref={setNodeRef}
+      ref={setRefs}
       style={style}
       {...attributes}
       {...listeners}
