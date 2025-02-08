@@ -238,7 +238,11 @@ export default function FridgePage() {
         <div>
           <FridgeContainer items={fridgeItems} />
         </div>
-        <InventoryContainer items={inventoryItems} isOpen={isInventoryOpen} />
+        <InventoryContainer 
+          items={inventoryItems} 
+          isOpen={isInventoryOpen} 
+          onClose={() => setIsInventoryOpen(false)} 
+        />
       </div>
       <DragOverlay>
         {activeItem ? (
@@ -251,7 +255,10 @@ export default function FridgePage() {
           </div>
         ) : null}
       </DragOverlay>
-      <Navbar onInventoryClick={() => setIsInventoryOpen(!isInventoryOpen)} />
+      <Navbar 
+        onInventoryClick={() => setIsInventoryOpen(!isInventoryOpen)} 
+        isInventoryOpen={isInventoryOpen}
+      />
     </DndContext>
   );
 } 
