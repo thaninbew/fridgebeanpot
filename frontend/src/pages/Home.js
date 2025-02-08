@@ -2,22 +2,22 @@ import { Link } from "react-router-dom";
 
 export default function Home() {
   return (
-    <div className="w-screen h-screen relative overflow-hidden">
+    <div className="flex flex-row items-start w-[100vw] h-[100vh]">
       <div
-        className="absolute left-1/2 transform -translate-x-1/2"
-        style={{ top: "17vh", width: "60vw" }}
+        className="absolute left-[50vw] transform -translate-x-1/2"
+        style={{ top: "15vh", width: "60vw" }}
       >
         <div className="flex flex-col items-start">
-          <h1 className="text-black text-[65px] font-semibold mb-5">fridge.</h1>
+          <h1 className="text-black text-[15vw] font-semibold mb-5">fridge.</h1>
 
-          <div className="mt-[35vh]">
+          <div className="mt-[33vh]">
             <div className="text-black font-normal text-[30px]">Hungry?</div>
             <div className="text-black text-[18px] font-light">
               Find local restaurants near you.
             </div>
           </div>
 
-          <div className="mt-3 w-full">
+          <div className=" mt-4 w-full">
             <Link to="/login">
               <button
                 type="button"
@@ -45,7 +45,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="flex items-center justify-center mt-[19vh]">
+      <div className="w-[100vw] h-[82vh] flex flex-col items-center justify-center">
         <img src="/bean-fridge.svg" alt="Logo" className="w-[50vw] h-[50vh]" />
       </div>
     </div>

@@ -36,7 +36,7 @@ module.exports = {
         //for the rest of the content moving up a bit
         contentSlideUp: {
           '0%': { transform: 'translateY(0)' },
-          '100%': { transform: 'translateY(-13vh)' },
+          '100%': { transform: 'translateY(-7vh)' },
         },
       },
       animation: {

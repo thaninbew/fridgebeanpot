@@ -2,15 +2,15 @@ import { IoMdArrowDropright } from "react-icons/io";
 
 export default function Login() {
   return (
-    <div className="relative w-screen h-screen bg-[#f8f5ec] overflow-hidden">
-      <div className="absolute top-0 left-0 right-0 z-10 animate-contentSlideUp">
+    <div className=" w-[100vw] h-[100vh] flex flex-row items-start">
+      <div className="absolute top-0 left-0 right-0 animate-contentSlideUp">
         <div
-          className="absolute left-1/2 transform -translate-x-1/2"
-          style={{ top: "17vh", width: "60vw" }}
+          className="absolute left-[50vw] transform -translate-x-1/2"
+          style={{ top: "15vh", width: "60vw" }}
         >
           <h1 className="text-black text-[65px] font-semibold ">fridge.</h1>
         </div>
-        <div className="flex items-center justify-center mt-[19vh]">
+        <div className="flex items-center justify-center mt-[17vh]">
           <img
             src="/bean-fridge.svg"
             alt="Logo"
@@ -19,7 +19,7 @@ export default function Login() {
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 w-screen h-[45vh] bg-[#ffc964] rounded-tl-[30px] rounded-tr-[30px] animate-slideUp">
+      <div className="fixed bottom-0 left-0 right-0 w-screen h-[40vh] bg-[#ffc964] rounded-tl-[30px] rounded-tr-[30px] animate-slideUp">
         <div className="w-[80vw] mx-auto">
           <div className="mt-10 mb-7 text-left text-4xl font-bold ml-3">Log In</div>
           <form className="flex flex-col items-center">
