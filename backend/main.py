@@ -11,7 +11,7 @@ load_dotenv()
 
 app = FastAPI()
 
-# CORS middleware configuration
+# CORS middleware configurations
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # In production, replace with your frontend URL
