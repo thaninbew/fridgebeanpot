@@ -31,9 +31,9 @@ export const storageAPI = {
 
   updateFridgeItemPosition: async (itemId, newPosition) => {
     console.log('Calling updateFridgePosition RPC:', { itemId, newPosition });
-    const { error } = await supabase.rpc('update_fridge_position', {
+    const { error } = await supabase.rpc('update_fridge_pos', {
       item_id: itemId,
-      new_position: newPosition
+      new_pos: newPosition
     });
     console.log('updateFridgePosition response:', { error });
     return handleStorageError(error);

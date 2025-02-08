@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DndContext, DragOverlay, closestCenter } from '@dnd-kit/core';
+import { DndContext, DragOverlay, closestCenter, pointerWithin } from '@dnd-kit/core';
 import { restrictToWindowEdges } from '@dnd-kit/modifiers';
 import FridgeContainer from '../components/FridgeContainer';
 import InventoryContainer from '../components/InventoryContainer';
@@ -51,25 +51,55 @@ export default function FridgePage() {
 
   const handleDragEnd = async (event) => {
     const { active, over } = event;
+    console.log('Drag End Event:', {
+      activeId: active.id,
+      activeData: active.data.current,
+      overId: over?.id,
+      overData: over?.data.current,
+    });
+    
     setActiveId(null);
 
-    if (!over) return;
+    if (!over) {
+      console.log('No valid drop target found');
+      return;
+    }
 
     const sourceContainer = active.data.current?.container;
     const destinationContainer = over.data.current?.container;
+    const destinationIndex = over.data.current?.index ?? 0;
 
-    if (!sourceContainer || !destinationContainer) return;
+    console.log('Container Info:', {
+      sourceContainer,
+      destinationContainer,
+      destinationIndex,
+    });
+
+    if (!sourceContainer || !destinationContainer) {
+      console.log('Missing container information', { sourceContainer, destinationContainer });
+      return;
+    }
 
     try {
       if (sourceContainer === destinationContainer) {
         // Moving within the same container
         if (sourceContainer === 'fridge') {
-          const response = await storageAPI.updateFridgeItemPosition(active.id, over.data.current.index);
+          console.log('Attempting to update fridge position:', {
+            itemId: active.id,
+            newPosition: destinationIndex
+          });
+          const response = await storageAPI.updateFridgeItemPosition(active.id, destinationIndex);
+          console.log('Update fridge position response:', response);
           if (response?.error) throw response.error;
         }
         // For inventory, we don't need to update positions
       } else {
         // Moving between containers
+        console.log('Moving between containers:', {
+          from: sourceContainer,
+          to: destinationContainer,
+          itemId: active.id
+        });
         if (destinationContainer === 'fridge') {
           const response = await storageAPI.moveToFridge(active.id);
           if (response?.error) throw response.error;
@@ -83,6 +113,12 @@ export default function FridgePage() {
       await fetchItems();
     } catch (err) {
       console.error('Error handling drag and drop:', err);
+      console.error('Full error details:', {
+        message: err.message,
+        code: err.code,
+        details: err.details,
+        hint: err.hint
+      });
       setError(err.message);
     }
   };
@@ -111,7 +147,7 @@ export default function FridgePage() {
     <DndContext
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
-      collisionDetection={closestCenter}
+      collisionDetection={pointerWithin}
       modifiers={[restrictToWindowEdges]}
     >
       <div className="container mx-auto px-4 py-8">

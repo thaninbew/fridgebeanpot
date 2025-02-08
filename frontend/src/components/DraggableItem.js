@@ -10,7 +10,8 @@ export default function DraggableItem({ item, index, container, className, textC
     setNodeRef,
     transform,
     transition,
-    isDragging
+    isDragging,
+    over
   } = useSortable({
     id: item.id,
     data: {
@@ -23,8 +24,11 @@ export default function DraggableItem({ item, index, container, className, textC
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1
+    opacity: isDragging ? 0.5 : 1,
+    cursor: 'grab'
   };
+
+  const isOverCurrent = over?.id === item.id;
 
   return (
     <div
@@ -33,8 +37,8 @@ export default function DraggableItem({ item, index, container, className, textC
       {...attributes}
       {...listeners}
       className={`aspect-square rounded-lg border-2 ${className} flex items-center justify-center p-2 ${
-        isDragging ? 'shadow-lg' : ''
-      }`}
+        isDragging ? 'shadow-lg z-50' : ''
+      } ${isOverCurrent ? 'ring-2 ring-offset-2 ring-blue-500' : ''} transition-shadow duration-200`}
     >
       <div className="text-center">
         <span className={`font-medium break-words ${textClassName}`}>
