@@ -1,3 +1,10 @@
+## .env setup
+```
+GOOGLE_MAPS_KEY=
+SUPABASE_URL=
+SUPABASE_ANON_KEY=
+```
+
 # FastAPI Supabase Authentication Backend
 
 This is a FastAPI backend with Supabase authentication integration.
