@@ -12,6 +12,7 @@
     "concurrently": "^8.2.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "supabase": "^2.9.6",
     "web-vitals": "^4.2.4"
   },
   "devDependencies": {

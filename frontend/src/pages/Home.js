@@ -25,6 +25,15 @@ export default function Home() {
         >
           <span className="text-black font-normal text-[20px]">Log In</span>
         </button>
+
+        <button
+          type="button"
+          className="mt-3 w-[50vw] h-[50px] bg-[#ffdc90] rounded-[22.20px] shadow-[0px_3px_0px_0px_rgba(0,0,0,1)] 
+               active:shadow-[inset_0px_1px_0px_rgba(0,0,0,1)] border border-black 
+               flex justify-center items-center transition-shadow duration-150 transform active:translate-y-1"
+        >
+          <span className="text-black font-normal text-[20px]">Sign up</span>
+        </button>
       </div>
     </div>
   );
