@@ -66,18 +66,30 @@ export default function FridgePage() {
     }
 
     const sourceContainer = active.data.current?.container;
-    const destinationContainer = over.data.current?.type === 'slot' 
-      ? over.data.current.container 
-      : over.data.current?.container || over.id;
+    const destinationContainer = over.data.current?.container;
+    
+    // Get position from either the slot or the item we're dropping onto
+    const position = over.data.current?.type === 'slot' 
+      ? over.data.current.position 
+      : over.data.current?.item?.position;
 
     console.log('Container Info:', {
       sourceContainer,
       destinationContainer,
+      position,
       overData: over.data.current
     });
 
-    if (!sourceContainer || !destinationContainer) {
-      console.log('Missing container information', { sourceContainer, destinationContainer });
+    // Only require position for fridge-to-fridge moves
+    const isFridgeToFridge = sourceContainer === 'fridge' && destinationContainer === 'fridge';
+    if (!sourceContainer || !destinationContainer || (isFridgeToFridge && typeof position !== 'number')) {
+      console.log('Missing required drop information', { 
+        sourceContainer, 
+        destinationContainer, 
+        position,
+        isFridgeToFridge,
+        overData: over.data.current 
+      });
       return;
     }
 
@@ -85,20 +97,37 @@ export default function FridgePage() {
       if (sourceContainer === destinationContainer) {
         // Moving within the same container
         if (sourceContainer === 'fridge') {
-          const position = over.data.current?.position;
-          if (typeof position !== 'number') {
-            console.log('Missing position for fridge move');
+          const activeItem = fridgeItems.find(item => item.id === active.id);
+          const targetItem = fridgeItems.find(item => item.position === position);
+
+          // Don't swap if trying to drop onto itself
+          if (activeItem.id === targetItem?.id) {
+            console.log('Dropping item onto itself, ignoring');
             return;
           }
 
-          console.log('Attempting to update fridge position:', {
-            itemId: active.id,
-            newPosition: position,
-            overData: over.data.current
+          console.log('Attempting to swap items:', {
+            activeItem: {
+              id: activeItem?.id,
+              name: activeItem?.item_name,
+              position: activeItem?.position
+            },
+            targetItem: {
+              id: targetItem?.id,
+              name: targetItem?.item_name,
+              position: targetItem?.position
+            }
           });
-          const response = await storageAPI.updateFridgeItemPosition(active.id, position);
-          console.log('Update fridge position response:', response);
-          if (response?.error) throw response.error;
+
+          if (targetItem) {
+            // If there's a target item, swap positions
+            const response = await storageAPI.swapFridgePositions(activeItem.id, targetItem.id);
+            if (response?.error) throw response.error;
+          } else {
+            // If moving to an empty slot, just update position
+            const response = await storageAPI.updateFridgeItemPosition(active.id, position);
+            if (response?.error) throw response.error;
+          }
         }
         // For inventory, we don't need to update positions
       } else {

@@ -39,6 +39,16 @@ export const storageAPI = {
     return handleStorageError(error);
   },
 
+  swapFridgePositions: async (item1Id, item2Id) => {
+    console.log('Calling swapFridgePositions RPC:', { item1Id, item2Id });
+    const { error } = await supabase.rpc('swap_fridge_positions', {
+      item1_id: item1Id,
+      item2_id: item2Id
+    });
+    console.log('swapFridgePositions response:', { error });
+    return handleStorageError(error);
+  },
+
   removeFridgeItem: async (itemId) => {
     console.log('Calling removeFridgeItem RPC:', itemId);
     const { error } = await supabase.rpc('remove_fridge_item', { item_id: itemId });
