@@ -11,6 +11,16 @@ const routes: Routes = [
         element: () => import('./components/hello'),
         skeleton: PageLoader,
       },
+      {
+        path: '/login',
+        element: () => import('./components/login'),
+        skeleton: PageLoader,
+      },
+      {
+        path: '/signup',
+        element: () => import('./components/signup'),
+        skeleton: PageLoader,
+      },
     ],
   },
 ];
