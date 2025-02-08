@@ -79,9 +79,12 @@ export const storageAPI = {
   },
 
   // Move items between fridge and inventory
-  moveToFridge: async (itemId) => {
-    console.log('Calling moveToFridge RPC:', itemId);
-    const { error } = await supabase.rpc('move_to_fridge', { item_id: itemId });
+  moveToFridge: async (itemId, position) => {
+    console.log('Calling moveToFridge RPC:', { itemId, position });
+    const { error } = await supabase.rpc('move_to_fridge', { 
+      item_id: itemId,
+      target_position: position 
+    });
     console.log('moveToFridge response:', { error });
     return handleStorageError(error);
   },
