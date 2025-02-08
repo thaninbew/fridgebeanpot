@@ -67,16 +67,17 @@ export default function FridgePage() {
 
     const sourceContainer = active.data.current?.container;
     const destinationContainer = over.data.current?.container;
-    const destinationIndex = over.data.current?.index ?? 0;
+    const position = over.data.current?.position;
 
     console.log('Container Info:', {
       sourceContainer,
       destinationContainer,
-      destinationIndex,
+      position,
+      overData: over.data.current
     });
 
-    if (!sourceContainer || !destinationContainer) {
-      console.log('Missing container information', { sourceContainer, destinationContainer });
+    if (!sourceContainer || !destinationContainer || typeof position !== 'number') {
+      console.log('Missing required drop information', { sourceContainer, destinationContainer, position });
       return;
     }
 
@@ -86,9 +87,10 @@ export default function FridgePage() {
         if (sourceContainer === 'fridge') {
           console.log('Attempting to update fridge position:', {
             itemId: active.id,
-            newPosition: destinationIndex
+            newPosition: position,
+            overData: over.data.current
           });
-          const response = await storageAPI.updateFridgeItemPosition(active.id, destinationIndex);
+          const response = await storageAPI.updateFridgeItemPosition(active.id, position);
           console.log('Update fridge position response:', response);
           if (response?.error) throw response.error;
         }
@@ -98,7 +100,8 @@ export default function FridgePage() {
         console.log('Moving between containers:', {
           from: sourceContainer,
           to: destinationContainer,
-          itemId: active.id
+          itemId: active.id,
+          position
         });
         if (destinationContainer === 'fridge') {
           const response = await storageAPI.moveToFridge(active.id);
