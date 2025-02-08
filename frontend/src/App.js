@@ -7,6 +7,7 @@ import FridgePage from './pages/FridgePage';
 import Inventory from './pages/Inventory';
 import './App.css';
 import Map from './pages/Explore/Map';
+import Recs from './pages/Explore/Recs';
 
 // Protected Route wrapper
 function PrivateRoute({ children }) {
@@ -76,6 +77,14 @@ function App() {
             element={
               <PublicRoute>
                 <Map />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/explore"
+            element={
+              <PublicRoute>
+                <Recs />
               </PublicRoute>
             }
           />
