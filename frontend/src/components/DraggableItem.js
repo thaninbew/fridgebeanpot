@@ -8,7 +8,7 @@ export default function DraggableItem({ item, index, container, className, textC
   const {
     attributes,
     listeners,
-    setNodeRef: setSortableRef,
+    setNodeRef,
     transform,
     transition,
     isDragging,
@@ -34,7 +34,7 @@ export default function DraggableItem({ item, index, container, className, textC
 
   // Combine the refs
   const setRefs = (node) => {
-    setSortableRef(node);
+    setNodeRef(node);
     setDroppableRef(node);
   };
 
@@ -42,10 +42,13 @@ export default function DraggableItem({ item, index, container, className, textC
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
-    cursor: 'grab'
+    cursor: 'grab',
+    touchAction: 'none', // Prevent touch scrolling while dragging
+    WebkitUserSelect: 'none',
+    userSelect: 'none'
   };
 
-  const isOverCurrent = isOver;
+  const isOverCurrent = over?.id === item.id;
 
   return (
     <div
@@ -53,11 +56,12 @@ export default function DraggableItem({ item, index, container, className, textC
       style={style}
       {...attributes}
       {...listeners}
-      className={`aspect-square rounded-lg border-2 ${className} flex items-center justify-center p-2 ${
-        isDragging ? 'shadow-lg z-50' : ''
-      } ${isOverCurrent ? 'ring-2 ring-offset-2 ring-blue-500' : ''} transition-shadow duration-200`}
+      className={`aspect-square rounded-lg border-2 ${className} flex items-center justify-center p-2 
+        ${isDragging ? 'shadow-lg z-50' : ''} 
+        ${isOverCurrent ? 'ring-2 ring-offset-2 ring-blue-500' : ''} 
+        transition-shadow duration-200 touch-none select-none w-full h-full`}
     >
-      <div className="text-center">
+      <div className="text-center w-full">
         <span className={`font-medium break-words ${textClassName}`}>
           {item.item_name}
         </span>

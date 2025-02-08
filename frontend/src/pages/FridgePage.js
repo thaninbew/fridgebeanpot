@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { DndContext, DragOverlay, closestCenter, pointerWithin } from '@dnd-kit/core';
+import { 
+  DndContext, 
+  DragOverlay, 
+  pointerWithin,
+  TouchSensor,
+  MouseSensor,
+  useSensor,
+  useSensors
+} from '@dnd-kit/core';
 import { restrictToWindowEdges } from '@dnd-kit/modifiers';
 import FridgeContainer from '../components/FridgeContainer';
 import InventoryContainer from '../components/InventoryContainer';
@@ -13,6 +21,22 @@ export default function FridgePage() {
   const [error, setError] = useState(null);
   const [activeId, setActiveId] = useState(null);
   const { user } = useAuth();
+
+  // Configure sensors for both mouse and touch with better mobile settings
+  const mouseSensor = useSensor(MouseSensor, {
+    activationConstraint: {
+      distance: 10, // 10px of movement required before drag starts
+    },
+  });
+  
+  const touchSensor = useSensor(TouchSensor, {
+    activationConstraint: {
+      delay: 100, // Small delay for touch to differentiate from scroll
+      tolerance: 5, // Allow small amount of movement before activation
+    },
+  });
+
+  const sensors = useSensors(mouseSensor, touchSensor);
 
   const fetchItems = async () => {
     try {
@@ -201,12 +225,13 @@ export default function FridgePage() {
 
   return (
     <DndContext
+      sensors={sensors}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       collisionDetection={pointerWithin}
       modifiers={[restrictToWindowEdges]}
     >
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 min-h-screen touch-none">
         <h1 className="text-3xl font-bold mb-8">My Fridge</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
@@ -221,7 +246,7 @@ export default function FridgePage() {
       </div>
       <DragOverlay>
         {activeItem ? (
-          <div className="aspect-square rounded-lg border-2 bg-blue-50 border-blue-300 flex items-center justify-center p-2 shadow-lg">
+          <div className="fixed aspect-square rounded-lg border-2 bg-blue-50 border-blue-300 flex items-center justify-center p-2 shadow-lg w-[80px] h-[80px] touch-none">
             <div className="text-center">
               <span className="text-blue-600 font-medium break-words">
                 {activeItem.item_name}
