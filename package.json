@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "start-frontend": "cd frontend && npm run dev",
-    "start-backend": "cd backend && uvicorn main:app --port 5000 --reload",
+    "start-backend": "cd backend && python run.py",
     "start": "concurrently \"npm run start-frontend\" \"npm run start-backend\"",
     "build": "cd frontend && npm run build",
     "test": "cd frontend && npm test"
