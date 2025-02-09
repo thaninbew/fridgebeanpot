@@ -52,17 +52,16 @@ export default function Signup() {
   };
 
   return (
-    <div className="justify-center py-12 px-4 sm:px-6 lg:px-8">
-
+    <div className="min-h-screen bg-[#f7f6f4]">
       <Navbar/>
-      <div className="max-w-md w-full space-y-8">
+      <div className="max-w-md w-full mx-auto space-y-8 pt-8 px-4">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
             Create your account
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             Or{' '}
-            <Link to="/login" className="font-medium text-primary-600 hover:text-primary-500">
+            <Link to="/login" className="font-medium text-[#84A59D] hover:text-[#6b8a84]">
               sign in to your account
             </Link>
           </p>
@@ -87,7 +86,7 @@ export default function Signup() {
                   name="name"
                   type="text"
                   required
-                  className="appearance-none rounded-none relative block w-full pl-10 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
+                  className="appearance-none rounded-none relative block w-full pl-10 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-[#84A59D] focus:border-[#84A59D] focus:z-10 sm:text-sm"
                   placeholder="Full Name"
                   value={formData.name}
                   onChange={handleChange}
@@ -108,7 +107,7 @@ export default function Signup() {
                   type="email"
                   autoComplete="email"
                   required
-                  className="appearance-none rounded-none relative block w-full pl-10 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
+                  className="appearance-none rounded-none relative block w-full pl-10 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#84A59D] focus:border-[#84A59D] focus:z-10 sm:text-sm"
                   placeholder="Email address"
                   value={formData.email}
                   onChange={handleChange}
@@ -128,7 +127,7 @@ export default function Signup() {
                   name="password"
                   type="password"
                   required
-                  className="appearance-none rounded-none relative block w-full pl-10 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
+                  className="appearance-none rounded-none relative block w-full pl-10 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#84A59D] focus:border-[#84A59D] focus:z-10 sm:text-sm"
                   placeholder="Password"
                   value={formData.password}
                   onChange={handleChange}
@@ -148,7 +147,7 @@ export default function Signup() {
                   name="confirmPassword"
                   type="password"
                   required
-                  className="appearance-none rounded-none relative block w-full pl-10 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
+                  className="appearance-none rounded-none relative block w-full pl-10 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-[#84A59D] focus:border-[#84A59D] focus:z-10 sm:text-sm"
                   placeholder="Confirm Password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
@@ -161,7 +160,7 @@ export default function Signup() {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
+              className="group relative w-full flex justify-center py-2 px-4 border border-black text-sm font-medium rounded-[50px] text-black bg-[#ffdc90] hover:bg-[#e6c681] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#84A59D] disabled:opacity-50 shadow-[0px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-[inset_0px_1px_0px_rgba(0,0,0,1)]"
             >
               {loading ? 'Creating Account...' : 'Create Account'}
             </button>

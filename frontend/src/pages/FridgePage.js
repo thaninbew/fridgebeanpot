@@ -356,7 +356,7 @@ export default function FridgePage() {
             <div className="flex items-end float-end">
               <button
                 onClick={() => setIsInventoryOpen(true)}
-                className="w-20 h-20 bg-[#84A59D] rounded-[50px] mt-[50%] border-2 border-black flex items-center justify-center transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 "
+                className="w-20 h-20 bg-[#84A59D] rounded-[50px] mt-[10%] border-2 border-black flex items-center justify-center transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 "
               >
                 <GiKnapsack className="text-4xl"/>
               </button>
