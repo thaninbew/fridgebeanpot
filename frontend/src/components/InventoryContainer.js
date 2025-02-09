@@ -59,7 +59,7 @@ export default function InventoryContainer({ items, isOpen, onClose }) {
           ) : (
             <SortableContext items={items.map(item => item.id)} strategy={rectSortingStrategy}>
               <div 
-                className="grid grid-cols-2 gap-4 overflow-y-auto pr-3" 
+                className="grid grid-cols-2 gap-6 overflow-y-auto pr-3 place-items-center" 
                 style={{ maxHeight: 'calc(80vh - 120px)' }}
               >
                 {items.map((item) => (
@@ -68,8 +68,8 @@ export default function InventoryContainer({ items, isOpen, onClose }) {
                     item={item}
                     index={item.position}
                     container="inventory"
-                    className="bg-green-50 border-green-300"
-                    textClassName="text-green-600"
+                    className=""
+                    textClassName="text-gray-700"
                   />
                 ))}
               </div>

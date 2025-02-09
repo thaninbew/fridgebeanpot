@@ -28,17 +28,14 @@ export function FridgeSlot({ position, item, slotPosition }) {
           item={item}
           index={position}
           container="fridge"
-          className="bg-white/80 backdrop-blur-sm border-gray-300"
+          className=""
           textClassName="text-black"
         />
       ) : (
         <div
-          className={`aspect-square bg-white/30 backdrop-blur-sm rounded-lg border-2 border-dashed 
-            ${isOver ? 'border-blue-400 bg-blue-50/50' : 'border-gray-300'} 
-            flex items-center justify-center transition-colors duration-200`}
-        >
-          <span className="text-gray-400 text-sm">Empty</span>
-        </div>
+          className={`aspect-square w-[80px] h-[80px] flex items-center justify-center transition-colors duration-200
+            ${isOver ? 'border-2 border-dashed border-blue-400' : ''}`}
+        />
       )}
     </div>
   );

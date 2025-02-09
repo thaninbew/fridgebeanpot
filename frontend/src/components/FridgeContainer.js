@@ -5,16 +5,16 @@ import { FridgeSlot } from './FridgeSlot';
 
 // Define positions for each of the 12 slots (as shown above)
 const slotPositions = [
-  { left: '24%', top: '17%' },
-  { left: '50%', top: '17%' },
-  { left: '76%', top: '17%' },
-  { left: '24%', top: '38%' },
-  { left: '50%', top: '38%' },
-  { left: '76%', top: '38%' },
+  { left: '24%', top: '22%' },
+  { left: '50%', top: '22%' },
+  { left: '76%', top: '22%' },
+  { left: '24%', top: '41%' },
+  { left: '50%', top: '41%' },
+  { left: '76%', top: '41%' },
+  { left: '24%', top: '61%' },
+  { left: '50%', top: '61%' },
+  { left: '76%', top: '61%' },
 
-  { left: '24%', top: '59%' },
-  { left: '50%', top: '59%' },
-  { left: '76%', top: '59%' },
 
   { left: '24%', top: '78.5%' },
 
