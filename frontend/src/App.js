@@ -1,3 +1,4 @@
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { StorageProvider } from './contexts/StorageContext';
@@ -12,6 +13,7 @@ import Profile from './pages/Profile/Profile';
 import Map from './pages/Explore/Map';
 import Recs from './pages/Explore/Recs';
 import PrizePage from './pages/PrizePage/PrizePage';
+import LoadingPage from './pages/Loading/LoadingPage';
 
 // Protected Route wrapper
 function PrivateRoute({ children }) {
@@ -108,6 +110,7 @@ function App() {
 
             <Route path="/map" element={<Map />} />
             <Route path="/explore" element={<Recs />} />
+            <Route path="/loading" element={<LoadingPage />} />
           </Routes>
         </StorageProvider>
       </AuthProvider>

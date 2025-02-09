@@ -1,10 +1,20 @@
+import React from "react";
 import { FaLocationDot } from "react-icons/fa6";
 import { IoMdArrowDropright } from "react-icons/io";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function ClaimComponent({ name, photo, location }) {
+  const navigate = useNavigate();
+
+  const handleClaim = () => {
+    navigate('/loading');
+  };
+
   return (
-    <div className="">
+    <div 
+      className="w-[80vw] h-[20vh] mb-4 bg-white rounded-lg shadow-md p-4 flex flex-col justify-between cursor-pointer"
+      onClick={handleClaim}
+    >
       <div className="w-[90vw] h-[18vh] bg-white rounded-[21px] shadow-[0px_2px_0px_0px_rgba(0,0,0,1.00)] border border-black flex justify-center pt-2 mb-3">
         <div className="flex flex-row w-[100%] items-start justify-start p-3">
           <img

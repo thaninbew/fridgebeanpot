@@ -19,14 +19,6 @@ module.exports = {
           900: '#0c4a6e',
         },
       },
-    },
-  },
-  plugins: [
-    require('@tailwindcss/forms'),
-  ],
-
-  theme: {
-    extend: {
       keyframes: {
         slideUp: {
           '0%': { transform: 'translateY(100%)' },
@@ -40,13 +32,20 @@ module.exports = {
           '0%': { opacity: '1', transform: 'translateY(0)' },
           '100%': { opacity: '0', transform: 'translateY(-10px)' },
         },
+        'loading-bar': {
+          '0%': { width: '0%' },
+          '100%': { width: '100%' }
+        }
       },
       animation: {
         slideUp: 'slideUp 0.5s ease-out forwards',
         contentSlideUp: 'contentSlideUp 0.5s ease-out forwards',
         fadeOutUp: 'fadeOutUp 0.5s ease-out forwards',
+        'loading-bar': 'loading-bar 2s ease-in-out'
       },
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/forms'),
+  ],
 } 
