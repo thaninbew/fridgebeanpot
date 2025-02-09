@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import { restaurantCache } from './backendApi.ts';
+import { backendApi, restaurantCache } from './backendApi.ts';
 
 const handleStorageError = (error) => {
   console.log('Storage API error:', error);
@@ -106,3 +106,4 @@ export const storageAPI = {
 };
 
 window.restaurantCache = restaurantCache;
+window.backendApi = backendApi;
