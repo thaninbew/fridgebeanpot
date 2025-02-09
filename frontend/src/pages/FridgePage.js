@@ -312,19 +312,30 @@ export default function FridgePage() {
           <FridgeContainer items={fridgeItems} />
         </div>
 
-        {/* Inventory Drop Zone - only show when dragging from fridge */}
-        {isDragging && activeId && fridgeItems.find(item => item.id === activeId) && (
-          <div 
-            ref={setInventoryDropZoneRef}
-            className="mt-6 h-24 border-2 border-dashed rounded-lg flex items-center justify-center border-gray-300"
-          >
-            <div className="text-center">
-              <span className="text-gray-500 font-medium">
-              ↓ Inventory ↓
-              </span>
+        {/* Inventory Button or Drop Zone */}
+        <div className="mt-6">
+          {isDragging && activeId && fridgeItems.find(item => item.id === activeId) ? (
+            <div 
+              ref={setInventoryDropZoneRef}
+              className="w-full h-24 border-2 border-dashed rounded-lg flex items-center justify-center border-gray-300"
+            >
+              <div className="text-center">
+                <span className="text-gray-500 font-medium">
+                  ↓ Inventory ↓
+                </span>
+              </div>
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="flex justify-center">
+              <button
+                onClick={() => setIsInventoryOpen(true)}
+                className="w-48 h-16 bg-[#84A59D] rounded-[45.50px] border-2 border-black flex items-center justify-center transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              >
+                <span className="text-black font-medium text-lg">Open Inventory</span>
+              </button>
+            </div>
+          )}
+        </div>
 
         <InventoryContainer 
           items={inventoryItems} 

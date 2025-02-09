@@ -49,17 +49,19 @@ export default function Navbar({ onInventoryClick, isInventoryOpen }) {
                         </button>
                     </Link>
 
-                    <button 
-                        type="button" 
-                        className="items-center justify-center px-6" 
-                        onClick={handleInventoryClick}
-                    >
-                        <img 
-                            src="/nav/inventory.svg" 
-                            alt="Inventory"
-                            className={`${isInventoryOpen ? 'opacity-50' : activeButton === 2 ? 'filter brightness-0' : ''}`} 
-                        />
-                    </button>
+                    <Link to='/claim'>
+                        <button 
+                            type="button" 
+                            className="items-center justify-center px-6" 
+                            onClick={() => handleButtonClick(2)}
+                        >
+                            <img 
+                                src="/nav/inventory.svg" 
+                                alt="Claim"
+                                className={`${activeButton === 2 || location.pathname === '/claim' ? 'filter brightness-0' : ''}`} 
+                            />
+                        </button>
+                    </Link>
 
                     <Link to='/explore'>
                         <button 

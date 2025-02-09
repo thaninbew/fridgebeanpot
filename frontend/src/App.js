@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import FridgePage from './pages/FridgePage';
 import Inventory from './pages/Inventory';
+import ClaimPage from './pages/ClaimPage';
 import './App.css';
 import Profile from './pages/Profile/Profile';
 import Map from './pages/Explore/Map';
@@ -40,6 +41,15 @@ function App() {
         <StorageProvider>
           <Routes>
             <Route path="/" element={<Home />} />
+
+            <Route
+              path="/claim"
+              element={
+                <PrivateRoute>
+                  <ClaimPage />
+                </PrivateRoute>
+              }
+            />
 
             <Route
               path="/inventory"
