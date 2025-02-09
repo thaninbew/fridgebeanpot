@@ -12,11 +12,6 @@ export default function InventoryContainer({ items, isOpen, onClose }) {
     }
   });
 
-  // Create an array of 16 slots, filled with items at their positions
-  const slots = Array(16).fill(null).map((_, index) => {
-    return items.find(item => item.position === index) || null;
-  });
-
   return (
     <>
       {/* Backdrop */}
@@ -57,32 +52,29 @@ export default function InventoryContainer({ items, isOpen, onClose }) {
 
         <div className="p-6 pb-20">
           <h2 className="text-2xl font-bold mb-4">Inventory</h2>
-          <SortableContext items={items.map(item => item.id)} strategy={rectSortingStrategy}>
-            <div 
-              className="grid grid-cols-2 gap-4 overflow-y-auto pr-3" 
-              style={{ maxHeight: 'calc(80vh - 120px)' }}
-            >
-              {slots.map((item, index) => (
-                <div key={index}>
-                  {item ? (
-                    <DraggableItem
-                      item={item}
-                      index={index}
-                      container="inventory"
-                      className="bg-green-50 border-green-300"
-                      textClassName="text-green-600"
-                    />
-                  ) : (
-                    <div
-                      className="aspect-square bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center"
-                    >
-                      <span className="text-gray-400">Empty</span>
-                    </div>
-                  )}
-                </div>
-              ))}
+          {items.length === 0 ? (
+            <div className="flex items-center justify-center h-[50vh]">
+              <p className="text-xl text-gray-500">Your inventory is empty!</p>
             </div>
-          </SortableContext>
+          ) : (
+            <SortableContext items={items.map(item => item.id)} strategy={rectSortingStrategy}>
+              <div 
+                className="grid grid-cols-2 gap-4 overflow-y-auto pr-3" 
+                style={{ maxHeight: 'calc(80vh - 120px)' }}
+              >
+                {items.map((item) => (
+                  <DraggableItem
+                    key={item.id}
+                    item={item}
+                    index={item.position}
+                    container="inventory"
+                    className="bg-green-50 border-green-300"
+                    textClassName="text-green-600"
+                  />
+                ))}
+              </div>
+            </SortableContext>
+          )}
         </div>
       </div>
     </>
