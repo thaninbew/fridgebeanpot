@@ -58,6 +58,28 @@ export default function FridgePage() {
 
   const sensors = useSensors(mouseSensor, touchSensor);
 
+  // Helper function to reorganize inventory items
+  const reorganizeInventory = async () => {
+    try {
+      // Sort inventory items by position
+      const sortedItems = [...inventoryItems].sort((a, b) => a.position - b.position);
+      
+      // Update positions to be sequential starting from 0
+      for (let i = 0; i < sortedItems.length; i++) {
+        if (sortedItems[i].position !== i) {
+          const response = await storageAPI.updateInventoryItemPosition(sortedItems[i].id, i);
+          if (response?.error) throw response.error;
+        }
+      }
+      
+      // Refresh inventory items
+      const newInventoryItems = await storageAPI.getInventoryItems();
+      setInventoryItems(newInventoryItems.data || []);
+    } catch (err) {
+      console.error('Error reorganizing inventory:', err);
+    }
+  };
+
   const handleDragStart = (event) => {
     setActiveId(event.active.id);
     
@@ -181,16 +203,16 @@ export default function FridgePage() {
             // Then move the inventory item to the fridge at the specific position
             const moveToFridgeResponse = await storageAPI.moveToFridge(active.id, position);
             if (moveToFridgeResponse?.error) throw moveToFridgeResponse.error;
+
+            // Reorganize inventory after the swap
+            await reorganizeInventory();
           } else {
             // Position is empty, move directly there
             const response = await storageAPI.moveToFridge(active.id, position);
             if (response?.error) throw response.error;
           }
         } else {
-          // Moving to inventory - keep the same position in inventory
-          const activeItem = fridgeItems.find(item => item.id === active.id);
-          
-          // First update the position of the item being moved to inventory
+          // Moving to inventory
           const response = await storageAPI.moveToInventory(active.id);
           if (response?.error) throw response.error;
 
@@ -200,6 +222,9 @@ export default function FridgePage() {
             const updateResponse = await storageAPI.updateFridgeItemPosition(item.id, item.position);
             if (updateResponse?.error) throw updateResponse.error;
           }
+
+          // Reorganize inventory after adding new item (NOT WORKING)
+          await reorganizeInventory();
         }
       }
 
