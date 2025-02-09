@@ -12,29 +12,32 @@ export default function ClaimComponent({ name, photo, location }) {
 
   return (
     <div 
-      className="w-[90vw] h-[18vh] bg-white rounded-[21px] shadow-[0px_2px_0px_0px_rgba(0,0,0,1.00)] border border-black mb-3 cursor-pointer"
+      className="w-[90vw] min-h-[18vh] bg-white rounded-[21px] shadow-[0px_2px_0px_0px_rgba(0,0,0,1.00)] border border-black mb-3 cursor-pointer"
       onClick={handleClaim}
     >
-      <div className="flex flex-row w-full items-start p-3">
+      <div className="flex flex-row w-full p-3 gap-3">
         <img
-          className="w-[30vw] h-[30vw] rounded-2xl border border-black"
+          className="w-[25vw] h-[25vw] rounded-2xl border border-black flex-shrink-0"
           src={"/freaky-bean.svg"}
         />
 
-        <div className="flex flex-row justify-between flex-1">
-          <div className="ml-6">
-            <div className="text-black text-[6vw] font-bold">{name}</div>
-            <div className="text-black text-[4vw] font-normal flex flex-row items-center">
-              <FaLocationDot className="mr-2" /> {location}
+        <div className="flex flex-1 flex-col justify-between">
+          <div>
+            <div className="text-black text-[5vw] font-bold break-words">{name}</div>
+            <div className="text-black text-[3.5vw] font-normal flex flex-row items-start break-words">
+              <FaLocationDot className="mr-2 mt-1 flex-shrink-0" /> 
+              <span className="break-words">{location}</span>
             </div>
           </div>
 
-          <button
-            type="button"
-            className="text-end w-[10vw] h-[10vw] bg-[#84A59D] rounded-[50px] border-2 border-black flex items-center justify-center transform hover:-translate-y-0.5 mt-[9vh] mr-1"
-          >
-            <IoMdArrowDropright className="text-4xl" />
-          </button>
+          <div className="flex justify-end">
+            <button
+              type="button"
+              className="w-[10vw] h-[10vw] bg-[#84A59D] rounded-[50px] border-2 border-black flex items-center justify-center transform hover:-translate-y-0.5"
+            >
+              <IoMdArrowDropright className="text-4xl" />
+            </button>
+          </div>
         </div>
       </div>
     </div>

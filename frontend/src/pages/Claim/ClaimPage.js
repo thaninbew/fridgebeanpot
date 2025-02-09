@@ -29,18 +29,17 @@ export default function ClaimPage() {
   );
 
   return (
-    <div className="flex flex-col justify-center items-center">
-      <div className="pt-16 min-h-screen touch-none pb-24 flex flex-col items-center">
+    <div className="flex flex-col min-h-screen">
+      <div className="flex-1 pt-16 pb-24">
         <div className="mb-8 text-center">
           <h1 className="text-[10vw] font-extrabold">Claim</h1>
-          <p1 className="font-medium">
-            {" "}
-            Visit a local restaurant to claim rewards.{" "}
-          </p1>
+          <p className="font-medium">
+            Visit a local restaurant to claim rewards.
+          </p>
         </div>
 
-        <div className="w-[80vw] mb-10 flex justify-center items-center">
-          <BiSearch className="absolute mr-[66vw]" />
+        <div className="w-[80vw] mb-6 mx-auto relative">
+          <BiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2" />
           <input
             type="text"
             placeholder="Where do you want to eat today?"
@@ -50,7 +49,7 @@ export default function ClaimPage() {
           />
         </div>
 
-        <div className="overflow-y-scroll">
+        <div className="flex flex-col items-center gap-3 pb-20">
           {isLoading ? (
             <div className="text-gray-500 text-lg">Loading restaurants...</div>
           ) : filteredRestaurants.length > 0 ? (
