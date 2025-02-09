@@ -18,7 +18,7 @@ export default function ClaimComponent({ name, photo, location, restaurant }) {
       <div className="flex flex-row w-full p-3 gap-3">
         <img
           className="w-[25vw] h-[25vw] rounded-2xl border border-black flex-shrink-0"
-          src={"/freaky-bean.svg"}
+          src={"/placeholder.png"}
         />
 
         <div className="flex flex-1 flex-col justify-between">

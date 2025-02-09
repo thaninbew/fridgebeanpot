@@ -7,7 +7,7 @@ export default function RecComponent({ rating, restaurant, cuisine, image }) {
         <div className="flex flex-col w-[100%]">
           <img
             className="w-[90%] h-[65%] rounded-2xl border border-black ml-auto mr-auto"
-            src={"/freaky-bean.svg"}
+            src={"/placeholder.png"}
           />
 
           <div className="ml-4 mt-2">
