@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useDroppable } from '@dnd-kit/core';
 import DraggableItem from './DraggableItem';
 
-export function FridgeSlot({ position, item, slotPosition }) {
+export function FridgeSlot({ position, item, slotPosition, isDragging }) {
   const { setNodeRef, isOver } = useDroppable({
     id: `fridge-slot-${position}`,
     data: {
@@ -16,7 +16,7 @@ export function FridgeSlot({ position, item, slotPosition }) {
   return (
     <div 
       ref={setNodeRef}
-      className={`absolute w-[80px] h-[80px] transition-all ${isOver ? 'ring-2 ring-blue-400' : ''}`}
+      className={`absolute w-[80px] h-[80px] transition-all`}
       style={{
         left: slotPosition.left,
         top: slotPosition.top,
@@ -34,7 +34,8 @@ export function FridgeSlot({ position, item, slotPosition }) {
       ) : (
         <div
           className={`aspect-square w-[80px] h-[80px] flex items-center justify-center transition-colors duration-200
-            ${isOver ? 'border-2 border-dashed border-blue-400' : ''}`}
+            ${isDragging ? 'border border-dashed border-gray-300' : ''}
+            ${isOver ? 'border-2 border-dashed border-[#f6bd60] bg-[#f6bd60]/10' : ''}`}
         />
       )}
     </div>
@@ -55,5 +56,6 @@ FridgeSlot.propTypes = {
     image_url: PropTypes.string,
     position: PropTypes.number,
     user_id: PropTypes.string
-  })
+  }),
+  isDragging: PropTypes.bool.isRequired
 };

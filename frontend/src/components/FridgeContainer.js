@@ -24,7 +24,7 @@ const slotPositions = [
 
 ];
 
-export default function FridgeContainer({ items }) {
+export default function FridgeContainer({ items, isDragging }) {
   // Create an array of exactly 12 slots (0-11)
   const slots = Array.from({ length: 12 }, (_, index) => {
     const item = items.find(item => item.position === index);
@@ -55,7 +55,8 @@ export default function FridgeContainer({ items }) {
                   key={position} 
                   position={position} 
                   item={item} 
-                  slotPosition={slotPositions[position]} 
+                  slotPosition={slotPositions[position]}
+                  isDragging={isDragging}
                 />
               ))}
             </SortableContext>
@@ -74,5 +75,10 @@ FridgeContainer.propTypes = {
       position: PropTypes.number,
       user_id: PropTypes.string
     })
-  ).isRequired
+  ).isRequired,
+  isDragging: PropTypes.bool
+};
+
+FridgeContainer.defaultProps = {
+  isDragging: false
 };

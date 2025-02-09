@@ -310,7 +310,7 @@ export default function FridgePage() {
       <div className="container mx-auto px-4 py-8 pt-16 min-h-screen touch-none pb-24">
         <h1 className="text-4xl font-bold mb-8 mt-10 pl-4">My Fridge</h1>
         <div>
-          <FridgeContainer items={fridgeItems} />
+          <FridgeContainer items={fridgeItems} isDragging={isDragging} />
         </div>
 
         {/* Inventory Button or Drop Zone */}
