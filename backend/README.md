@@ -5,6 +5,7 @@ SUPABASE_URL=
 SUPABASE_ANON_KEY=
 PPLX_KEY=
 OPENAI_KEY=
+MAPS_EMBED_KEY=
 ```
 
 # FastAPI Supabase Authentication Backend

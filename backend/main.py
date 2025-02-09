@@ -2,13 +2,15 @@ from fastapi import FastAPI, HTTPException, Depends, status, APIRouter, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 from supabase import create_client, Client
 import os
 from dotenv import load_dotenv
-from geo_features import find_locations
+from geo_features import find_locations, generate_map_embed
 from slowapi import Limiter
 from slowapi.util import get_remote_address
+from fastapi.responses import HTMLResponse
+import json
 
 load_dotenv()
 
@@ -123,11 +125,15 @@ async def protected_route(user = Depends(get_user)):
 # Initialize limiter
 limiter = Limiter(key_func=get_remote_address)
 
-# Apply rate limit to the endpoint
 @app.get("/api/get-restaurants")
 @limiter.limit("5/minute")  # 5 requests per minute
-async def get_restaurants(request: Request, location: str, user = Depends(get_user)):
+def get_restaurants(request: Request, location: str, user = Depends(get_user)):
     return find_locations(location)
+
+# @app.get("/api/get-map-embed", response_class=HTMLResponse)
+# # @limiter.limit("5/minute")  # 5 requests per minute
+# async def get_map_embed(places: str):
+#     return "<iframe src=\"" + generate_map_embed(json.loads(places)) + "\"></iframe>"
 
 @app.get("/")
 async def root():

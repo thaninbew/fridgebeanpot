@@ -172,6 +172,44 @@ def find_locations(
     return ret
 
 
+def generate_map_embed(locations: List[dict], center_location: dict = None, zoom: int = 14) -> str:
+    if not locations:
+        return None
+        
+    # Calculate center if not provided
+    if not center_location:
+        avg_lat = sum(loc['location']['lat'] for loc in locations) / len(locations)
+        avg_lng = sum(loc['location']['lng'] for loc in locations) / len(locations)
+        center_location = {'lat': avg_lat, 'lng': avg_lng}
+    
+    base_url = "https://maps.googleapis.com/maps/api/staticmap"
+    
+    # Create markers
+    markers = []
+    for i, loc in enumerate(locations):
+        lat = loc['location']['lat']
+        lng = loc['location']['lng']
+        label = chr(65 + i)  # A, B, C, etc.
+        markers.append(f"color:red|label:{label}|{lat},{lng}")
+    
+    # Build parameters
+    params = {
+        'center': f"{center_location['lat']},{center_location['lng']}",
+        'zoom': str(zoom),
+        'size': '600x400',
+        'maptype': 'roadmap',
+        'markers': markers,
+        'key': os.getenv('MAPS_EMBED_KEY')  # Different API key may be needed
+    }
+    
+    # Build URL
+    embed_url = base_url + '?' + '&'.join(
+        [f"{k}={','.join(v) if isinstance(v, list) else v}" for k, v in params.items()]
+    )
+    
+    return embed_url
+
+
 if __name__ == "__main__":
     example_places = [
         {
