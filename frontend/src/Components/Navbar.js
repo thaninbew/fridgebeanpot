@@ -24,7 +24,9 @@ export default function Navbar({ onInventoryClick, isInventoryOpen }) {
             if (location.pathname !== '/fridge') {
                 navigate('/fridge');
             } else {
-                onInventoryClick();
+                if (onInventoryClick) {
+                    onInventoryClick();
+                }
             }
         }
     };
@@ -96,6 +98,6 @@ export default function Navbar({ onInventoryClick, isInventoryOpen }) {
 }
 
 Navbar.propTypes = {
-    onInventoryClick: PropTypes.func.isRequired,
+    onInventoryClick: PropTypes.func,
     isInventoryOpen: PropTypes.bool
 };

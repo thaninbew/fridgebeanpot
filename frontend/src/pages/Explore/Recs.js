@@ -1,19 +1,42 @@
+import React, { useEffect, useState } from 'react';
 import ExploreNavBar from "./ExploreNavBar";
 import RecComponent from "./RecComponent";
-import { restaurantCache } from "../../lib/backendApi.ts";
-import { useEffect, useState } from "react";
+import { restaurantCache, backendApi } from "../../lib/backendApi.ts";
 
 export default function Recs() {
     const [restaurants, setRestaurants] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     
     useEffect(() => {
-        // Get all restaurants from cache
-        const allRestaurants = restaurantCache.getAllRestaurants();
-        setRestaurants(allRestaurants);
+        async function fetchRestaurants() {
+            try {
+                setIsLoading(true);
+                // Try to get current position first
+                const position = await backendApi.getCurrentPosition();
+                const location = backendApi.normalizeLatLong(
+                    position.coords.latitude,
+                    position.coords.longitude
+                );
+                const allRestaurants = await backendApi.fetchLocalRestaurants(location);
+                setRestaurants(allRestaurants || []);
+            } catch (error) {
+                console.error('Error fetching restaurants:', error);
+                // Fallback to cached data if available
+                const cachedData = await restaurantCache.getAllRestaurants();
+                setRestaurants(cachedData || []);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+
+        fetchRestaurants();
     }, []);
 
-    // Split restaurants randomly but evenly between recommended and discover (SCAMMINGS!)
+    // Split restaurants randomly but evenly between recommended and discover
     const splitRestaurants = () => {
+        if (!restaurants || restaurants.length === 0) {
+            return { recommended: [], discover: [] };
+        }
         const shuffled = [...restaurants].sort(() => Math.random() - 0.5);
         const halfPoint = Math.ceil(shuffled.length / 2);
         return {
@@ -23,6 +46,17 @@ export default function Recs() {
     };
 
     const { recommended, discover } = splitRestaurants();
+
+    if (isLoading) {
+        return (
+            <div>
+                <ExploreNavBar />
+                <div className="flex justify-center items-center h-screen">
+                    <p className="text-gray-500">Loading restaurants...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div>
@@ -41,7 +75,7 @@ export default function Recs() {
                         />
                     ))
                 ) : (
-                    <p className="text-gray-500 text-lg pl-4">No small local restaurants nearby at the moment :(</p>
+                    <p className="text-gray-500 text-lg pl-4">No restaurants nearby at the moment</p>
                 )}
             </div>
 
@@ -58,7 +92,7 @@ export default function Recs() {
                         />
                     ))
                 ) : (
-                    <p className="text-gray-500 text-lg pl-4">No small local restaurants nearby at the moment</p>
+                    <p className="text-gray-500 text-lg pl-4">No restaurants nearby at the moment</p>
                 )}
             </div>
         </div>
