@@ -137,6 +137,6 @@ def get_restaurants(request: Request, location: str):
 
 @app.get("/")
 async def root():
-    return {"message": "Server is running!"}
+    return {"message": "Welcome to FridgeBeanPot API"}
 
 app = app  # Required for Vercel 
