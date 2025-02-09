@@ -15,12 +15,22 @@ import { storageAPI } from '../lib/storageApi';
 import { useAuth } from '../contexts/AuthContext';
 import Navbar from '../components/Navbar';
 import { useStorage } from '../contexts/StorageContext';
+import { useLocation } from 'react-router-dom';
 
 export default function FridgePage() {
   const { fridgeItems, inventoryItems, loading, error, setFridgeItems, setInventoryItems } = useStorage();
   const [activeId, setActiveId] = useState(null);
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const { user } = useAuth();
+  const location = useLocation();
+
+  // Handle opening inventory if navigated from another page
+  useEffect(() => {
+    const shouldOpenInventory = location.state?.openInventory;
+    if (shouldOpenInventory && !loading) {
+      setIsInventoryOpen(true);
+    }
+  }, [location.state, loading]);
 
   // Configure sensors for both mouse and touch with better mobile settings
   const mouseSensor = useSensor(MouseSensor, {

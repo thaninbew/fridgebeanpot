@@ -22,11 +22,8 @@ export default function Navbar({ onInventoryClick, isInventoryOpen }) {
         if (!isInventoryOpen) {
             handleButtonClick(2);
             if (location.pathname !== '/fridge') {
-                // Navigate to fridge first, then open inventory after a short delay
-                navigate('/fridge');
-                setTimeout(() => {
-                    onInventoryClick();
-                }, 100);
+                // Navigate to fridge with state indicating to open inventory
+                navigate('/fridge', { state: { openInventory: true } });
             } else {
                 onInventoryClick();
             }
