@@ -67,7 +67,7 @@ export default function Navbar({ onInventoryClick, isInventoryOpen }) {
                         </button>
                     </Link>
 
-                    <Link to='/Profile'>
+                    <Link to='/profile'>
                         <button 
                             type="button" 
                             className="items-center justify-center px-6" 
@@ -76,7 +76,7 @@ export default function Navbar({ onInventoryClick, isInventoryOpen }) {
                             <img 
                                 src="/nav/profile.svg" 
                                 alt="Profile"
-                                className={`${activeButton === 4 || location.pathname === '/Profile' ? 'filter brightness-0' : ''}`} 
+                                className={`${activeButton === 4 || location.pathname === '/profile' ? 'filter brightness-0' : ''}`} 
                             />
                         </button>
                     </Link>

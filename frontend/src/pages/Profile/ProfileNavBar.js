@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Navbar from "../../components/Navbar";
 
 export default function ProfileNavBar() {
   const initialTab = window.location.pathname === '/explore' ? 'explore' : 'map';
@@ -13,7 +12,7 @@ export default function ProfileNavBar() {
   };
 
   return (
-    <div className="flex flex-col w-screen h-screen items-center">
+    <div className="flex flex-col items-center">
       <div className="w-[80vw] h-[9vh] relative bg-[#f7f6f4] rounded-[50px] border-2 border-black mt-10 mb-10">
         <div
           className={`absolute top-0 bottom-0 w-1/2 bg-[#84a59d] rounded-[50px] transition-transform duration-300 ${
@@ -40,7 +39,6 @@ export default function ProfileNavBar() {
           </button>
         </div>
       </div>
-      <Navbar />
     </div>
   );
 }
