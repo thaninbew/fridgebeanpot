@@ -11,7 +11,6 @@ import './App.css';
 import Profile from './pages/Profile/Profile';
 import Map from './pages/Explore/Map';
 import Recs from './pages/Explore/Recs';
-import ImagePreloader from './components/ImagePreloader';
 
 // Protected Route wrapper
 function PrivateRoute({ children }) {
@@ -40,7 +39,6 @@ function App() {
     <Router>
       <AuthProvider>
         <StorageProvider>
-          <ImagePreloader />
           <Routes>
             <Route path="/" element={<Home />} />
 

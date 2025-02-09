@@ -19,31 +19,24 @@ export function StorageProvider({ children }) {
   const fetchItems = async () => {
     try {
       setLoading(true);
-      // Fetch both fridge and inventory items with metadata
       const [fridgeResponse, inventoryResponse] = await Promise.all([
         storageAPI.getFridgeItems(),
         storageAPI.getInventoryItems()
       ]);
 
-      // Handle fridge items
       if (fridgeResponse.error) throw fridgeResponse.error;
-      setFridgeItems(fridgeResponse.data || []);
-
-      // Handle inventory items
       if (inventoryResponse.error) throw inventoryResponse.error;
+
+      setFridgeItems(fridgeResponse.data || []);
       setInventoryItems(inventoryResponse.data || []);
       
       // Check if this is a new user (both fridge and inventory are empty)
       if ((!fridgeResponse.data || fridgeResponse.data.length === 0) && 
           (!inventoryResponse.data || inventoryResponse.data.length === 0)) {
         console.log('New user detected, adding welcome item to fridge...');
-        
-        // Add welcome item directly using its item_name from item_metadata
         const welcomeResponse = await storageAPI.addFridgeItem('buttermilk_pancakes');
-        
         if (welcomeResponse.error) throw welcomeResponse.error;
         
-        // Refresh items to show the welcome item
         const updatedFridgeResponse = await storageAPI.getFridgeItems();
         if (updatedFridgeResponse.error) throw updatedFridgeResponse.error;
         setFridgeItems(updatedFridgeResponse.data || []);
@@ -58,12 +51,18 @@ export function StorageProvider({ children }) {
     }
   };
 
-  // Fetch items when user changes
+  // Only fetch items once when user is available
   useEffect(() => {
-    if (user) {
+    let mounted = true;
+
+    if (user && mounted) {
       fetchItems();
     }
-  }, [user]);
+
+    return () => {
+      mounted = false;
+    };
+  }, [user?.id]); // Only refetch if user ID changes
 
   const value = {
     fridgeItems,
