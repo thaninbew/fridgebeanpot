@@ -14,7 +14,7 @@ import json
 
 load_dotenv()
 
-app = FastAPI()
+app = FastAPI(title="FridgeBeanPot")
 
 # CORS middleware configurations
 app.add_middleware(
@@ -137,4 +137,6 @@ def get_restaurants(request: Request, location: str):
 
 @app.get("/")
 async def root():
-    return {"message": "Server is running!"} 
+    return {"message": "Server is running!"}
+
+app = app  # Required for Vercel 
