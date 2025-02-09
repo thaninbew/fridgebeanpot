@@ -36,6 +36,22 @@ export default function FridgePage() {
     }
   }, [location.state, loading]);
 
+  // Run cleanup when page loads
+  useEffect(() => {
+    if (!loading) {
+      storageAPI.cleanupStorage().then(() => {
+        // Refresh items after cleanup
+        Promise.all([
+          storageAPI.getFridgeItems(),
+          storageAPI.getInventoryItems()
+        ]).then(([fridgeResponse, inventoryResponse]) => {
+          setFridgeItems(fridgeResponse.data || []);
+          setInventoryItems(inventoryResponse.data || []);
+        });
+      });
+    }
+  }, [loading]);
+
   // Cleanup timer on unmount
   useEffect(() => {
     return () => {
@@ -187,9 +203,13 @@ export default function FridgePage() {
           const newFridgeItems = fridgeItems.filter(item => item.id !== active.id);
           setFridgeItems(newFridgeItems);
 
-          const newInventoryItems = [...inventoryItems, { ...activeItem, position: inventoryItems.length }]
-            .sort((a, b) => a.position - b.position)
-            .map((item, index) => ({ ...item, position: index }));
+          // Calculate next inventory position
+          const nextPosition = inventoryItems.length > 0
+            ? Math.max(12, Math.max(...inventoryItems.map(item => item.position)) + 1)
+            : 12;
+
+          const newInventoryItems = [...inventoryItems, { ...activeItem, position: nextPosition }]
+            .sort((a, b) => a.position - b.position);
           
           await reorganizeInventory(newInventoryItems);
 
@@ -197,9 +217,11 @@ export default function FridgePage() {
           await storageAPI.moveToInventory(active.id);
           
           // Update remaining fridge positions
-          const updates = newFridgeItems.map(item => 
-            storageAPI.updateFridgeItemPosition(item.id, item.position)
-          );
+          const updates = newFridgeItems
+            .sort((a, b) => a.position - b.position)
+            .map((item, index) => 
+              storageAPI.updateFridgeItemPosition(item.id, index)
+            );
           await Promise.all(updates);
         } else if (destinationContainer === 'fridge') {
           const occupiedItem = fridgeItems.find(item => item.position === position);
@@ -247,6 +269,9 @@ export default function FridgePage() {
         }
       }
 
+      // Run cleanup after drag operations
+      await storageAPI.cleanupStorage();
+      
       // Final fetch to ensure consistency
       const [finalFridgeItems, finalInventoryItems] = await Promise.all([
         storageAPI.getFridgeItems(),

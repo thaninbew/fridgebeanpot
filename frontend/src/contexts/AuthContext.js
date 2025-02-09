@@ -16,47 +16,22 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [initialized, setInitialized] = useState(false);
 
   const handleSuccessfulAuth = async (session) => {
-    if (!initialized) {
-      setUser(session?.user ?? null);
-      setLoading(false);
-      setInitialized(true);
-    }
+    setUser(session?.user ?? null);
+    setLoading(false);
   };
 
   useEffect(() => {
-    let mounted = true;
-
-    // Only fetch session once on mount
-    const initializeAuth = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (mounted) {
-          handleSuccessfulAuth(session);
-        }
-      } catch (err) {
-        console.error('Error initializing auth:', err);
-        if (mounted) {
-          setLoading(false);
-          setInitialized(true);
-        }
-      }
-    };
-
-    initializeAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (mounted) {
-        setUser(session?.user ?? null);
-      }
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      handleSuccessfulAuth(session);
     });
 
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      handleSuccessfulAuth(session);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const signUp = async ({ email, password, ...metadata }) => {
@@ -135,7 +110,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={value}>
-      {initialized ? children : null}
+      {!loading && children}
     </AuthContext.Provider>
   );
 } 

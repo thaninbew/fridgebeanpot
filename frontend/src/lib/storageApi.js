@@ -136,10 +136,43 @@ export const storageAPI = {
   },
 
   moveToInventory: async (itemId) => {
-    console.log('Calling moveToInventory RPC:', itemId);
-    const { error } = await supabase.rpc('move_to_inventory', { item_id: itemId });
-    console.log('moveToInventory response:', { error });
-    return handleStorageError(error);
+    try {
+      // Get all inventory items to find the highest position
+      const { data: inventoryItems } = await supabase
+        .from('inventory_items')
+        .select('position')
+        .order('position', { ascending: false })
+        .limit(1);
+
+      // Calculate next position (minimum 12, or highest + 1)
+      const nextPosition = inventoryItems?.length > 0 
+        ? Math.max(12, (inventoryItems[0].position || 11) + 1)
+        : 12;
+
+      // First move the item to inventory
+      console.log('Calling moveToInventory RPC:', itemId);
+      const { error: moveError } = await supabase.rpc('move_to_inventory', { 
+        item_id: itemId
+      });
+
+      if (!moveError) {
+        // Then update its position
+        const { error: updateError } = await supabase
+          .from('inventory_items')
+          .update({ position: nextPosition })
+          .eq('id', itemId);
+
+        if (updateError) {
+          console.error('Error updating inventory position:', updateError);
+          return handleStorageError(updateError);
+        }
+      }
+
+      return handleStorageError(moveError);
+    } catch (err) {
+      console.error('Error in moveToInventory:', err);
+      return handleStorageError(err);
+    }
   },
 
   getGroupMembers: async (groupName) => {
@@ -147,6 +180,110 @@ export const storageAPI = {
     const { data, error } = await supabase.rpc("get_group_members", { query_group: groupName });
     console.log("getGroupMembers response:", { error });
     return error ? handleStorageError(error) : { data };
+  },
+
+  // Add a function to reorganize inventory positions
+  reorganizeInventory: async () => {
+    try {
+      // Get all inventory items
+      const { data: items } = await supabase
+        .from('inventory_items')
+        .select('id, position')
+        .order('position');
+
+      if (!items?.length) return;
+
+      // Update positions to be sequential starting from 12
+      const updates = items.map((item, index) => ({
+        id: item.id,
+        position: index + 12
+      }));
+
+      // Batch update all positions
+      const { error } = await supabase
+        .from('inventory_items')
+        .upsert(updates);
+
+      return handleStorageError(error);
+    } catch (err) {
+      console.error('Error reorganizing inventory:', err);
+      return handleStorageError(err);
+    }
+  },
+
+  // Add a cleanup function to fix duplicates and positions
+  cleanupStorage: async () => {
+    try {
+      // Get all items from both containers
+      const [{ data: fridgeItems }, { data: inventoryItems }] = await Promise.all([
+        supabase.from('fridge_items').select('id, item_name, position'),
+        supabase.from('inventory_items').select('id, item_name, position')
+      ]);
+
+      if (!fridgeItems || !inventoryItems) return;
+
+      // First, move any fridge items with position > 11 to inventory
+      const overflowFridgeItems = fridgeItems.filter(item => item.position > 11);
+      if (overflowFridgeItems.length > 0) {
+        for (const item of overflowFridgeItems) {
+          await supabase.rpc('move_to_inventory', { item_id: item.id });
+        }
+      }
+
+      // Refetch items after potential moves
+      const [{ data: updatedFridgeItems }, { data: updatedInventoryItems }] = await Promise.all([
+        supabase.from('fridge_items').select('id, item_name, position'),
+        supabase.from('inventory_items').select('id, item_name, position')
+      ]);
+
+      if (!updatedFridgeItems || !updatedInventoryItems) return;
+
+      // Find items that exist in both containers (duplicates)
+      const duplicates = updatedFridgeItems.filter(fridgeItem => 
+        updatedInventoryItems.some(invItem => invItem.item_name === fridgeItem.item_name)
+      );
+
+      // Remove duplicates from inventory (keep fridge items)
+      if (duplicates.length > 0) {
+        const duplicateNames = duplicates.map(item => item.item_name);
+        await supabase
+          .from('inventory_items')
+          .delete()
+          .in('item_name', duplicateNames);
+      }
+
+      // Fix fridge positions (should be 0-11)
+      const fridgeUpdates = updatedFridgeItems
+        .sort((a, b) => a.position - b.position)
+        .map((item, index) => ({
+          id: item.id,
+          position: index
+        }));
+
+      // Fix inventory positions (should be 12+)
+      const remainingInventoryItems = updatedInventoryItems.filter(invItem => 
+        !duplicates.some(dupItem => dupItem.item_name === invItem.item_name)
+      );
+
+      const inventoryUpdates = remainingInventoryItems
+        .sort((a, b) => a.position - b.position)
+        .map((item, index) => ({
+          id: item.id,
+          position: index + 12
+        }));
+
+      // Apply updates
+      if (fridgeUpdates.length > 0) {
+        await supabase.from('fridge_items').upsert(fridgeUpdates);
+      }
+      if (inventoryUpdates.length > 0) {
+        await supabase.from('inventory_items').upsert(inventoryUpdates);
+      }
+
+    } catch (err) {
+      console.error('Error cleaning up storage:', err);
+      return handleStorageError(err);
+    }
   }
 };
 
