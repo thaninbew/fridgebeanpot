@@ -59,24 +59,36 @@ export default function FridgePage() {
   const sensors = useSensors(mouseSensor, touchSensor);
 
   // Helper function to reorganize inventory items
-  const reorganizeInventory = async () => {
+  const reorganizeInventory = async (optimisticItems = null) => {
+    // If we have optimistic items, update UI immediately
+    if (optimisticItems) {
+      setInventoryItems(optimisticItems);
+    }
+
     try {
       // Sort inventory items by position
-      const sortedItems = [...inventoryItems].sort((a, b) => a.position - b.position);
+      const sortedItems = optimisticItems || [...inventoryItems].sort((a, b) => a.position - b.position);
       
-      // Update positions to be sequential starting from 0
-      for (let i = 0; i < sortedItems.length; i++) {
-        if (sortedItems[i].position !== i) {
-          const response = await storageAPI.updateInventoryItemPosition(sortedItems[i].id, i);
-          if (response?.error) throw response.error;
+      // Update positions in database
+      const updates = sortedItems.map((item, index) => {
+        if (item.position !== index) {
+          return storageAPI.updateInventoryItemPosition(item.id, index);
         }
-      }
+        return Promise.resolve();
+      });
       
-      // Refresh inventory items
-      const newInventoryItems = await storageAPI.getInventoryItems();
-      setInventoryItems(newInventoryItems.data || []);
+      await Promise.all(updates);
+      
+      // Only fetch from database if we didn't do optimistic update
+      if (!optimisticItems) {
+        const newInventoryItems = await storageAPI.getInventoryItems();
+        setInventoryItems(newInventoryItems.data || []);
+      }
     } catch (err) {
       console.error('Error reorganizing inventory:', err);
+      // If error occurs, fetch fresh data to ensure consistency
+      const newInventoryItems = await storageAPI.getInventoryItems();
+      setInventoryItems(newInventoryItems.data || []);
     }
   };
 
@@ -146,89 +158,113 @@ export default function FridgePage() {
 
     try {
       if (sourceContainer === destinationContainer) {
-        // Moving within the same container
         if (sourceContainer === 'fridge') {
           const activeItem = fridgeItems.find(item => item.id === active.id);
           const targetItem = fridgeItems.find(item => item.position === position);
 
-          // Don't swap if trying to drop onto itself
-          if (activeItem.id === targetItem?.id) {
-            console.log('Dropping item onto itself, ignoring');
-            return;
-          }
+          if (activeItem.id === targetItem?.id) return;
 
-          console.log('Attempting to swap items:', {
-            activeItem: {
-              id: activeItem?.id,
-              name: activeItem?.item_name,
-              position: activeItem?.position
-            },
-            targetItem: {
-              id: targetItem?.id,
-              name: targetItem?.item_name,
-              position: targetItem?.position
-            }
-          });
-
+          // Optimistic update for fridge swaps
+          const newFridgeItems = [...fridgeItems];
           if (targetItem) {
-            // If there's a target item, swap positions
-            const response = await storageAPI.swapFridgePositions(activeItem.id, targetItem.id);
-            if (response?.error) throw response.error;
+            // Swap positions in frontend immediately
+            const activeIndex = newFridgeItems.findIndex(item => item.id === activeItem.id);
+            const targetIndex = newFridgeItems.findIndex(item => item.id === targetItem.id);
+            [newFridgeItems[activeIndex].position, newFridgeItems[targetIndex].position] = 
+            [newFridgeItems[targetIndex].position, newFridgeItems[activeIndex].position];
+            setFridgeItems(newFridgeItems);
+
+            // Update database
+            await storageAPI.swapFridgePositions(activeItem.id, targetItem.id);
           } else {
-            // If moving to an empty slot, just update position
-            const response = await storageAPI.updateFridgeItemPosition(active.id, position);
-            if (response?.error) throw response.error;
+            // Update position in frontend immediately
+            const activeIndex = newFridgeItems.findIndex(item => item.id === activeItem.id);
+            newFridgeItems[activeIndex].position = position;
+            setFridgeItems(newFridgeItems);
+
+            // Update database
+            await storageAPI.updateFridgeItemPosition(active.id, position);
           }
         }
-        // For inventory, we don't need to update positions
       } else {
-        // Moving between containers
-        console.log('Moving between containers:', {
-          from: sourceContainer,
-          to: destinationContainer,
-          itemId: active.id,
-          position: position
-        });
-
         if (destinationContainer === 'fridge') {
-          // When moving to fridge, check if target position is occupied
           const occupiedItem = fridgeItems.find(item => item.position === position);
           
           if (occupiedItem) {
-            // If position is occupied, swap the items
-            // First move the fridge item to inventory
-            const moveToInventoryResponse = await storageAPI.moveToInventory(occupiedItem.id);
-            if (moveToInventoryResponse?.error) throw moveToInventoryResponse.error;
-            
-            // Then move the inventory item to the fridge at the specific position
-            const moveToFridgeResponse = await storageAPI.moveToFridge(active.id, position);
-            if (moveToFridgeResponse?.error) throw moveToFridgeResponse.error;
+            // Optimistic updates for swap between containers
+            const newFridgeItems = fridgeItems.filter(item => item.id !== occupiedItem.id);
+            const activeItem = inventoryItems.find(item => item.id === active.id);
+            activeItem.position = position;
+            newFridgeItems.push(activeItem);
+            setFridgeItems(newFridgeItems);
 
-            // Reorganize inventory after the swap
-            await reorganizeInventory();
+            // Optimistic inventory update
+            const newInventoryItems = inventoryItems.filter(item => item.id !== active.id);
+            occupiedItem.position = activeItem.position;
+            newInventoryItems.push(occupiedItem);
+            
+            // Sort and reposition inventory items
+            const sortedInventoryItems = newInventoryItems.sort((a, b) => a.position - b.position)
+              .map((item, index) => ({ ...item, position: index }));
+            
+            // Update UI immediately
+            await reorganizeInventory(sortedInventoryItems);
+
+            // Update database
+            await storageAPI.moveToInventory(occupiedItem.id);
+            await storageAPI.moveToFridge(active.id, position);
           } else {
-            // Position is empty, move directly there
-            const response = await storageAPI.moveToFridge(active.id, position);
-            if (response?.error) throw response.error;
+            // Optimistic updates for moving to empty fridge slot
+            const newFridgeItems = [...fridgeItems];
+            const activeItem = inventoryItems.find(item => item.id === active.id);
+            activeItem.position = position;
+            newFridgeItems.push(activeItem);
+            setFridgeItems(newFridgeItems);
+
+            const newInventoryItems = inventoryItems.filter(item => item.id !== active.id)
+              .sort((a, b) => a.position - b.position)
+              .map((item, index) => ({ ...item, position: index }));
+            
+            await reorganizeInventory(newInventoryItems);
+
+            // Update database
+            await storageAPI.moveToFridge(active.id, position);
           }
         } else {
-          // Moving to inventory
-          const response = await storageAPI.moveToInventory(active.id);
-          if (response?.error) throw response.error;
+          // Moving to inventory - Optimistic update
+          const activeItem = fridgeItems.find(item => item.id === active.id);
+          const newFridgeItems = fridgeItems.filter(item => item.id !== active.id);
+          setFridgeItems(newFridgeItems);
 
-          // Then ensure remaining fridge items keep their positions
-          const remainingFridgeItems = fridgeItems.filter(item => item.id !== active.id);
-          for (const item of remainingFridgeItems) {
-            const updateResponse = await storageAPI.updateFridgeItemPosition(item.id, item.position);
-            if (updateResponse?.error) throw updateResponse.error;
-          }
+          const newInventoryItems = [...inventoryItems, { ...activeItem, position: inventoryItems.length }]
+            .sort((a, b) => a.position - b.position)
+            .map((item, index) => ({ ...item, position: index }));
+          
+          await reorganizeInventory(newInventoryItems);
 
-          // Reorganize inventory after adding new item (NOT WORKING)
-          await reorganizeInventory();
+          // Update database
+          await storageAPI.moveToInventory(active.id);
+          
+          // Update remaining fridge positions
+          const updates = newFridgeItems.map(item => 
+            storageAPI.updateFridgeItemPosition(item.id, item.position)
+          );
+          await Promise.all(updates);
         }
       }
 
-      // Update local state based on API response
+      // Final fetch to ensure consistency
+      const [finalFridgeItems, finalInventoryItems] = await Promise.all([
+        storageAPI.getFridgeItems(),
+        storageAPI.getInventoryItems()
+      ]);
+      
+      setFridgeItems(finalFridgeItems.data || []);
+      setInventoryItems(finalInventoryItems.data || []);
+
+    } catch (err) {
+      console.error('Error handling drag and drop:', err);
+      // On error, fetch fresh data to ensure consistency
       const [newFridgeItems, newInventoryItems] = await Promise.all([
         storageAPI.getFridgeItems(),
         storageAPI.getInventoryItems()
@@ -236,15 +272,6 @@ export default function FridgePage() {
       
       setFridgeItems(newFridgeItems.data || []);
       setInventoryItems(newInventoryItems.data || []);
-
-    } catch (err) {
-      console.error('Error handling drag and drop:', err);
-      console.error('Full error details:', {
-        message: err.message,
-        code: err.code,
-        details: err.details,
-        hint: err.hint
-      });
     }
   };
 
