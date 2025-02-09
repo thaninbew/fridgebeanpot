@@ -1,5 +1,6 @@
 import Navbar from "../../components/Navbar";
 import styles from "./Profile.module.css";
+import ProfileNavBar from "./ProfileNavBar";
 
 
 export default function Profile() {
@@ -7,19 +8,27 @@ export default function Profile() {
     <div>
         <Navbar/>
         
-        <div className="profile">
+        <div>
             <div className={styles.profileHeader}> 
 
-                <div class="flex-row">
-                <img className={styles.profilePic} src=""/>
-                <h1> Name </h1>
-                </div>
+                    <div className={styles.wrapper}>
+                    <img className={styles.profilePic} src=""/>
+                    <p className={styles.Name}> Name 
+                    <p className={styles.level}>Lv. 123</p></p>
+                    </div>
 
             </div>
+
+            {/** add selector*/}
+            <ProfileNavBar/>
+
+            <h2>Achievements</h2>
+            {/** achievements container */}
+
+            {/** stats container */}
+
+
         </div>
-
-        
-
     </div>
 
    );

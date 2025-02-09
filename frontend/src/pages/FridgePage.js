@@ -21,6 +21,7 @@ export default function FridgePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeId, setActiveId] = useState(null);
+  const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const { user } = useAuth();
 
   // Configure sensors for both mouse and touch with better mobile settings
@@ -232,18 +233,18 @@ export default function FridgePage() {
       collisionDetection={pointerWithin}
       modifiers={[restrictToWindowEdges]}
     >
-      <div className="container mx-auto px-4 py-8 min-h-screen touch-none pb-24">
-        <h1 className="text-3xl font-bold mb-8">My Fridge</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div>
-            <h2 className="text-2xl font-semibold mb-4">Fridge Storage</h2>
-            <FridgeContainer items={fridgeItems} />
-          </div>
-          <div>
-            <h2 className="text-2xl font-semibold mb-4">Inventory</h2>
-            <InventoryContainer items={inventoryItems} />
-          </div>
+      <div className="container mx-auto px-4 py-8 pt-16 min-h-screen touch-none pb-24">
+        <h1 className="text-4xl font-bold mb-8 mt-16 pl-4">My Fridge</h1>
+        <div>
+          <FridgeContainer items={fridgeItems} />
         </div>
+
+
+        <InventoryContainer 
+          items={inventoryItems} 
+          isOpen={isInventoryOpen} 
+          onClose={() => setIsInventoryOpen(false)} 
+        />
       </div>
       <DragOverlay>
         {activeItem ? (
@@ -256,7 +257,10 @@ export default function FridgePage() {
           </div>
         ) : null}
       </DragOverlay>
-      <Navbar />
+      <Navbar 
+        onInventoryClick={() => setIsInventoryOpen(!isInventoryOpen)} 
+        isInventoryOpen={isInventoryOpen}
+      />
     </DndContext>
   );
 } 

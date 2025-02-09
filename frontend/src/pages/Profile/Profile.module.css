@@ -1,28 +1,37 @@
 @import "../../vars.css";
 
-.profile {
-
-}
 
 .profileHeader {
-    flex-grow: 2;
     background-color: var(--yellow);
     height: 61vw;
     max-height: 400px;
-
+    align-content: end;
 }
 
 .profilePic {
     border-radius: 50%;
     background-color: var(--offwhite);
-    width: 33vw;
-    height: 33vw;
+    width: 32vw;
+    height: 32vw;
     max-height: 200px;
     max-width: 200px;
     border: 1px solid;
 }
 
-.profilePic {
-    position: absolute;
-    margin: 20vw 0 0 26px;
+.Name {
+    font-size: 9vw;
+}
+
+.wrapper {
+    line-height: 8vw;
+    gap: 20px;
+    max-width: 400px;
+    padding: 35px;
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+}
+
+.level {
+    font-size: 4vw;
 }
