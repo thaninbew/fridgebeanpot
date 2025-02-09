@@ -333,7 +333,8 @@ export default function FridgePage() {
       modifiers={[restrictToWindowEdges]}
     >
       <div className="container mx-auto px-4 py-8 pt-16 min-h-screen touch-none pb-24">
-        <h1 className="text-4xl font-bold mb-8 mt-10 pl-4">My Fridge</h1>
+        <h1 className="font-bold text-4xl m-11 mb-2 text-center">My Fridge</h1>
+        <p className="text-gray-600 text-xl mx-11 mb-6 text-center">Collect your tasty treasures and arrange them just right!</p>
         <div>
           <FridgeContainer items={fridgeItems} isDragging={isDragging} />
         </div>
