@@ -5,7 +5,7 @@
 .profileHeader {
 
     background-color: var(--yellow);
-    height: 61vw;
+    height: 70vw;
     max-height: 400px;
     align-content: end;
 }
@@ -18,24 +18,24 @@
     max-height: 200px;
     max-width: 200px;
     border: 1px solid;
-}
-
-.Name {
-    font-size: 9vw;
+    background-image: url('../../../public/freaky-bean.svg');
+    background-size: 85%;
+    background-position: top;
 }
 
 .wrapper {
     line-height: 8vw;
     gap: 20px;
     max-width: 400px;
-    padding: 35\px;
+    padding: 35px;
     align-items: center;
     display: flex;
     flex-direction: row;
 }
 
 .level {
-    font-size: 4vw;
+    font-size: 5vw;
+    margin-top: 0.5vh;
 }
 
 .container {
@@ -57,8 +57,8 @@
 .achievementpic {
     border-radius: 50%;
     background-color: white;
-    width: 27vw;
-    height: 27vw;
+    width: 28vw;
+    height: 28vw;
     border: 1px solid;
     margin: 5px;
 }

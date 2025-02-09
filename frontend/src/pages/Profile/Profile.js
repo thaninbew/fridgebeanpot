@@ -4,17 +4,17 @@ import Achievement from "./Achievement";
 
 export default function Profile() {
    return (
-    <div className="min-h-screen pb-24 font-Satoshi-Variable">
+    <div className="min-h-screen">
         <div className={styles.profileHeader}> 
             <div className={styles.wrapper}>
                 <img className={styles.profilePic} src=""/>
-                <p className="font-bold text-[7vw]"> Name 
+                <p className="font-bold text-[9vw]"> Name 
                     <p className={styles.level}>Lv. 123</p>
                 </p>
             </div>
         </div>
 
-        <h2 className="text-2xl font-bold mb-4 p-10 pb-[4px]">Achievements</h2>
+        <h2 className="text-[27px] font-bold mb-3 p-8 pb-[2px]">Achievements</h2>
         
         {/** achievements container */}
         <div className={styles.container}>
@@ -46,7 +46,7 @@ export default function Profile() {
         </div>
 
         
-        <h2 className="text-2xl font-bold mb-4 p-10 pb-[4px]">Stats</h2>
+        <h2 className="text-[27px] font-bold mb-3 p-8 pb-[2px]">Stats</h2>
 
         {/** stats container */}
         <div className={styles.container}>

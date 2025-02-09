@@ -7,7 +7,7 @@ export default function Achievement({img, title, sub}) {
 
             <div className={styles.text}>
 
-            <p className="font-bold text-lg p-1">{title}</p>
+            <p className="font-bold text-lgs">{title}</p>
             <p>{sub}</p>
             
             </div>
