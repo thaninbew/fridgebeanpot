@@ -329,7 +329,7 @@ export default function FridgePage() {
             <div className="flex justify-center">
               <button
                 onClick={() => setIsInventoryOpen(true)}
-                className="w-48 h-16 bg-[#84A59D] rounded-[45.50px] border-2 border-black flex items-center justify-center transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                className="w-48 h-16 bg-[#84A59D] rounded-[45.50px] mt-[12%] border-2 border-black flex items-center justify-center transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 "
               >
                 <span className="text-black font-medium text-lg">Open Inventory</span>
               </button>

@@ -22,8 +22,7 @@ export default function Navbar({ onInventoryClick, isInventoryOpen }) {
         if (!isInventoryOpen) {
             handleButtonClick(2);
             if (location.pathname !== '/fridge') {
-                // Navigate to fridge with state indicating to open inventory
-                navigate('/fridge', { state: { openInventory: true } });
+                navigate('/fridge');
             } else {
                 onInventoryClick();
             }
