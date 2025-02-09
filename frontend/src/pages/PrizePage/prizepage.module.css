@@ -7,6 +7,8 @@
 
 }
 .surprise {
+    position: fixed;
+    max-width: 400px;
     overflow: hidden;
     left: 50%;
     margin-left: -200px;
@@ -14,6 +16,10 @@
     z-index: -150;
 }
 
-.chicken {
+.text {
+    padding-top: 40%;
+    padding-left: 40px;
+    align-content: center;
+    text-align: center;
     width: 400px;
 }
