@@ -6,7 +6,16 @@
     "start-backend": "cd backend && python run.py",
     "start": "concurrently \"npm run start-frontend\" \"npm run start-backend\"",
     "build": "cd frontend && npm run build",
-    "test": "cd frontend && npm test"
+    "test": "cd frontend && npm test",
+    "heroku-prebuild": "pip install -r backend/requirements.txt",
+    "heroku-postbuild": "echo 'Skipping frontend build'",
+    "heroku": "npm run start-backend",
+    "heroku:open": "heroku open",
+    "heroku:logs": "heroku logs --tail"
+  },
+  "engines": {
+    "node": "18.x",
+    "npm": "9.x"
   },
   "dependencies": {
     "concurrently": "^8.2.2",
