@@ -35,7 +35,7 @@ export function FridgeSlot({ position, item, slotPosition, isDragging }) {
         <div
   ref={setNodeRef}
   className={`aspect-square w-[80px] h-[80px] flex items-center justify-center transition-colors duration-200
-    ${isOver ? 'border-2 border-[#f6bd60] bg-[#f6bd60]/10' : ''}
+    ${isOver ? 'border-2 border-[#f6bd60] bg-[#f6bd60]/40' : ''}
     ${!isOver && isDragging ? 'border-2 border-dashed rounded-lg border-gray-600' : ''}
   `}
 />
