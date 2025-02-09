@@ -1,0 +1,15 @@
+
+.wrapper {
+    max-width: 100%;
+    margin: 0 auto;
+    overflow: hidden;
+    position: relative;
+
+}
+.surprise {
+    overflow: hidden;
+    left: 50%;
+    margin-left: -200px;
+    position: absolute;
+    z-index: -150;
+}

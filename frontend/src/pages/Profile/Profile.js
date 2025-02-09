@@ -8,7 +8,7 @@ export default function Profile() {
   return (
     <div className="min-h-screen">
 
-    <div className=" absolute pl-[63vw] pt-[80px] m-0">
+    <div className=" absolute pl-[63vw] pt-[40px] m-0">
             <div className="flex flex-row gap-[10px]">
           <button className="w-[15vw] h-auto bg-[#84A59D] rounded-[50%] border-2 border-black flex items-center justify-center transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
             <MdOutlinePersonAddAlt className="text-4xl " />
