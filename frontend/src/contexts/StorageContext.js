@@ -38,8 +38,11 @@ export function StorageProvider({ children }) {
           (!inventoryResponse.data || inventoryResponse.data.length === 0)) {
         console.log('New user detected, adding welcome item to fridge...');
         
-        // Add welcome item directly using its item_name from item_metadata
-        const welcomeResponse = await storageAPI.addFridgeItem('buttermilk_pancakes');
+        // Add welcome item using RPC function
+        const welcomeResponse = await supabase.rpc('add_fridge_item', {
+          item_name: 'buttermilk_pancakes',
+          target_pos: 0
+        });
         
         if (welcomeResponse.error) throw welcomeResponse.error;
         
