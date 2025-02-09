@@ -346,12 +346,24 @@ export default function FridgePage() {
       </div>
       <DragOverlay>
         {activeItem ? (
-          <div className="fixed aspect-square rounded-lg border-2 bg-blue-50 border-blue-300 flex items-center justify-center p-2 shadow-lg w-[80px] h-[80px] touch-none">
-            <div className="text-center">
-              <span className="text-blue-600 font-medium break-words">
-                {activeItem.item_name}
-              </span>
-            </div>
+          <div className="fixed aspect-square flex items-center justify-center w-[120px] h-[120px] touch-none transform -translate-x-1/2 -translate-y-1/2">
+            {activeItem.image_url ? (
+              <div className="w-full h-full flex items-center justify-center p-2">
+                <img 
+                  src={activeItem.image_url} 
+                  alt={activeItem.display_name || activeItem.item_name}
+                  className="max-w-full max-h-full object-contain"
+                  style={{ transform: 'scale(1.2)' }}
+                  draggable="false"
+                />
+              </div>
+            ) : (
+              <div className="text-center w-full">
+                <span className="text-blue-600 font-medium break-words">
+                  {activeItem.display_name || activeItem.item_name}
+                </span>
+              </div>
+            )}
           </div>
         ) : null}
       </DragOverlay>
