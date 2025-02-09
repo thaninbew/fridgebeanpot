@@ -3,7 +3,7 @@ import { FaStar } from "react-icons/fa";
 export default function RecComponent({rating, restaurant, cuisine, image}) {
     
 return (
-        <div className="pl-[15px]">
+        <div className="pl-[5px] pr-[5px]">
         <div className="w-[50vw] h-[52vw] bg-[#f7f6f4] rounded-[21px] shadow-[0px_2px_0px_0px_rgba(0,0,0,1.00)] border border-black flex justify-center pt-2">
             <div className="flex flex-col w-[100%]">
                 <img className="w-[90%] h-[65%] rounded-2xl border border-black ml-auto mr-auto" src={"/freaky-bean.svg"} />

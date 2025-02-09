@@ -6,25 +6,25 @@ export default function Recs() {
         <div>
           <ExploreNavBar />
       
-        <p className="font-bold text-2xl m-11 mb-4"> Recommended </p>
+        <p className="font-bold text-2xl m-9 mb-4"> Recommended </p>
         <div className="w-auto overflow-x-scroll ml-[10px] p-[15px] pt-0 whitespace-nowrap flex flex-row">
 
           <RecComponent 
-          rating= "4.2"
-          restaurant="Saxby's"
-          cuisine="American"
-          image="/"/>
-
-          <RecComponent 
-          rating= "4.0"
-          restaurant="Dumpling Palace"
+          rating= "4.4"
+          restaurant="Corner Bakery"
           cuisine="Chinese"
           image="/"/>
 
           <RecComponent 
           rating= "4.2"
-          restaurant="Saigon Fusion"
-          cuisine="Vietnamese"
+          restaurant="Mamacita's"
+          cuisine="Mexican"
+          image="/"/>
+
+          <RecComponent 
+          rating= "3.9"
+          restaurant="Ruggles Pizza"
+          cuisine="Italian"
           image="/"/>
 
           <RecComponent 
@@ -45,8 +45,8 @@ export default function Recs() {
 
           <RecComponent 
           rating= "4.2"
-          restaurant="Saxby's"
-          cuisine="American"
+          restaurant="Japonaise Bakery"
+          cuisine="Japanese"
           image="/"/>
 
           <RecComponent 
