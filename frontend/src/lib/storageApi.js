@@ -126,13 +126,35 @@ export const storageAPI = {
 
   // Move items between fridge and inventory
   moveToFridge: async (itemId, position) => {
-    console.log('Calling moveToFridge RPC:', { itemId, position });
-    const { error } = await supabase.rpc('move_to_fridge', { 
-      item_id: itemId,
-      target_position: position 
-    });
-    console.log('moveToFridge response:', { error });
-    return handleStorageError(error);
+    try {
+      // First check if this item already exists in fridge
+      const { data: itemToMove } = await supabase
+        .from('inventory_items')
+        .select('item_name')
+        .eq('id', itemId)
+        .single();
+
+      if (itemToMove) {
+        // Delete any other instances of this item from inventory
+        await supabase
+          .from('inventory_items')
+          .delete()
+          .neq('id', itemId)
+          .eq('item_name', itemToMove.item_name);
+      }
+
+      // Now move the item to fridge
+      console.log('Calling moveToFridge RPC:', { itemId, position });
+      const { error } = await supabase.rpc('move_to_fridge', { 
+        item_id: itemId,
+        target_position: position 
+      });
+      console.log('moveToFridge response:', { error });
+      return handleStorageError(error);
+    } catch (err) {
+      console.error('Error in moveToFridge:', err);
+      return handleStorageError(err);
+    }
   },
 
   moveToInventory: async (itemId) => {
