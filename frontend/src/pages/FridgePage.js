@@ -61,15 +61,11 @@ export default function FridgePage() {
   const handleDragStart = (event) => {
     setActiveId(event.active.id);
     
-    // If inventory is open and we're dragging an inventory item,
-    // start the timer to close it
     if (isInventoryOpen && event.active.data.current?.container === 'inventory') {
-      // Clear any existing timer
       if (closeTimerRef.current) {
         clearTimeout(closeTimerRef.current);
       }
-      
-      // Set new timer to close inventory after 1.5 seconds
+
       closeTimerRef.current = setTimeout(() => {
         setIsInventoryOpen(false);
       }, 600);
@@ -173,22 +169,23 @@ export default function FridgePage() {
         });
 
         if (destinationContainer === 'fridge') {
-          // When moving to fridge, find the first empty position
-          const occupiedPositions = fridgeItems.map(item => item.position);
-          let targetPosition = position;
-
-          // If the target position is occupied, find the next available one
-          if (occupiedPositions.includes(position)) {
-            for (let i = 0; i < 12; i++) {
-              if (!occupiedPositions.includes(i)) {
-                targetPosition = i;
-                break;
-              }
-            }
+          // When moving to fridge, check if target position is occupied
+          const occupiedItem = fridgeItems.find(item => item.position === position);
+          
+          if (occupiedItem) {
+            // If position is occupied, swap the items
+            // First move the fridge item to inventory
+            const moveToInventoryResponse = await storageAPI.moveToInventory(occupiedItem.id);
+            if (moveToInventoryResponse?.error) throw moveToInventoryResponse.error;
+            
+            // Then move the inventory item to the fridge at the specific position
+            const moveToFridgeResponse = await storageAPI.moveToFridge(active.id, position);
+            if (moveToFridgeResponse?.error) throw moveToFridgeResponse.error;
+          } else {
+            // Position is empty, move directly there
+            const response = await storageAPI.moveToFridge(active.id, position);
+            if (response?.error) throw response.error;
           }
-
-          const response = await storageAPI.moveToFridge(active.id, targetPosition);
-          if (response?.error) throw response.error;
         } else {
           // Moving to inventory - keep the same position in inventory
           const activeItem = fridgeItems.find(item => item.id === active.id);
