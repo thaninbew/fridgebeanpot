@@ -7,16 +7,14 @@
     background-color: var(--yellow);
     height: 70vw;
     max-height: 400px;
-    align-content: end;
+    align-content: start;
 }
 
 .profilePic {
     border-radius: 50%;
     background-color: var(--offwhite);
-    width: 32vw;
-    height: 32vw;
-    max-height: 200px;
-    max-width: 200px;
+    width: 30vw;
+    height: 30vw;
     border: 1px solid;
     background-image: url('../../../public/freaky-bean.svg');
     background-size: 85%;
@@ -25,12 +23,13 @@
 
 .wrapper {
     line-height: 8vw;
-    gap: 20px;
+    gap: 25px;
     max-width: 400px;
-    padding: 35px;
+    padding: 25px;
     align-items: center;
     display: flex;
     flex-direction: row;
+    margin-top: 9vh;
 }
 
 .level {
