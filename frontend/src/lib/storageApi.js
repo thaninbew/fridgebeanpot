@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
-import { backendApi, restaurantCache } from './backendApi.ts';
+// import { backendApi, restaurantCache } from './backendApi.ts';
+// import { claimsHandler } from './claims.ts';
 
 const handleStorageError = (error) => {
   console.log('Storage API error:', error);
@@ -67,7 +68,7 @@ export const storageAPI = {
 
   addInventoryItem: async (itemName) => {
     console.log('Calling addInventoryItem RPC with:', itemName);
-    const { data, error } = await supabase.rpc('add_inventory_item', { item_name: itemName });
+    const { data, error } = await supabase.rpc('add_inventory_item', { item_name: itemName, created_at: new Date().toISOString(),  });
     console.log('addInventoryItem response:', { data, error });
     return error ? handleStorageError(error) : { data };
   },
@@ -105,5 +106,7 @@ export const storageAPI = {
   }
 };
 
-window.restaurantCache = restaurantCache;
-window.backendApi = backendApi;
+// window.restaurantCache = restaurantCache;
+// window.backendApi = backendApi;
+// window.storageAPI = storageAPI;
+// window.claimsHandler = claimsHandler;

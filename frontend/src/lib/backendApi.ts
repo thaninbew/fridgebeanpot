@@ -18,7 +18,7 @@ export const restaurantCache = {
   getAllRestaurants: async (): Promise<Restaurant[]> => {
     const data = localStorage.getItem(restaurantCache.cacheKey);
     const cachedData = data ? JSON.parse(data) as Restaurant[] : [];
-    if (cachedData.length == 0) {
+    if (cachedData.length === 0) {
       return await backendApi.fetchLocalRestaurants();
     }
     return cachedData;
