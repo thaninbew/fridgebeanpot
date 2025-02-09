@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 export default function Navbar({ onInventoryClick, isInventoryOpen }) {
     const [activeButton, setActiveButton] = useState(false);
     const location = useLocation();
+    const navigate = useNavigate();
 
     // Reset active button when inventory closes
     useEffect(() => {
@@ -15,6 +16,21 @@ export default function Navbar({ onInventoryClick, isInventoryOpen }) {
 
     const handleButtonClick = (buttonIndex) => {
         setActiveButton(buttonIndex);
+    };
+
+    const handleInventoryClick = () => {
+        if (!isInventoryOpen) {
+            handleButtonClick(2);
+            if (location.pathname !== '/fridge') {
+                // Navigate to fridge first, then open inventory after a short delay
+                navigate('/fridge');
+                setTimeout(() => {
+                    onInventoryClick();
+                }, 100);
+            } else {
+                onInventoryClick();
+            }
+        }
     };
 
     return (
@@ -39,12 +55,7 @@ export default function Navbar({ onInventoryClick, isInventoryOpen }) {
                     <button 
                         type="button" 
                         className="items-center justify-center px-6" 
-                        onClick={() => {
-                            if (!isInventoryOpen) {
-                                handleButtonClick(2);
-                                onInventoryClick();
-                            }
-                        }}
+                        onClick={handleInventoryClick}
                     >
                         <img 
                             src="/nav/inventory.svg" 

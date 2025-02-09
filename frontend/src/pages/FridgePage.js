@@ -14,12 +14,10 @@ import InventoryContainer from '../components/InventoryContainer';
 import { storageAPI } from '../lib/storageApi';
 import { useAuth } from '../contexts/AuthContext';
 import Navbar from '../components/Navbar';
+import { useStorage } from '../contexts/StorageContext';
 
 export default function FridgePage() {
-  const [fridgeItems, setFridgeItems] = useState([]);
-  const [inventoryItems, setInventoryItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { fridgeItems, inventoryItems, loading, error, setFridgeItems, setInventoryItems } = useStorage();
   const [activeId, setActiveId] = useState(null);
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const { user } = useAuth();
@@ -39,50 +37,6 @@ export default function FridgePage() {
   });
 
   const sensors = useSensors(mouseSensor, touchSensor);
-
-  const fetchItems = async () => {
-    try {
-      // Fetch both fridge and inventory items
-      const [fridgeResponse, inventoryResponse] = await Promise.all([
-        storageAPI.getFridgeItems(),
-        storageAPI.getInventoryItems()
-      ]);
-
-      // Handle fridge items
-      if (fridgeResponse.error) throw fridgeResponse.error;
-      setFridgeItems(fridgeResponse.data || []);
-
-      // Handle inventory items
-      if (inventoryResponse.error) throw inventoryResponse.error;
-      setInventoryItems(inventoryResponse.data || []);
-      
-      // Check if this is a new user (both fridge and inventory are empty)
-      if ((!fridgeResponse.data || fridgeResponse.data.length === 0) && 
-          (!inventoryResponse.data || inventoryResponse.data.length === 0)) {
-        console.log('New user detected, adding welcome item to fridge...');
-        const welcomeResponse = await storageAPI.addFridgeItem('Welcome Bean! 🫘');
-        if (welcomeResponse.error) throw welcomeResponse.error;
-        
-        // Refresh items to show the welcome item
-        const updatedFridgeResponse = await storageAPI.getFridgeItems();
-        if (updatedFridgeResponse.error) throw updatedFridgeResponse.error;
-        setFridgeItems(updatedFridgeResponse.data || []);
-      }
-      
-      setError(null);
-    } catch (err) {
-      console.error('Error fetching items:', err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (user) {
-      fetchItems();
-    }
-  }, [user]);
 
   const handleDragStart = (event) => {
     setActiveId(event.active.id);
@@ -191,8 +145,15 @@ export default function FridgePage() {
         }
       }
 
-      // Refresh items after successful move
-      await fetchItems();
+      // Update local state based on API response
+      const [newFridgeItems, newInventoryItems] = await Promise.all([
+        storageAPI.getFridgeItems(),
+        storageAPI.getInventoryItems()
+      ]);
+      
+      setFridgeItems(newFridgeItems.data || []);
+      setInventoryItems(newInventoryItems.data || []);
+
     } catch (err) {
       console.error('Error handling drag and drop:', err);
       console.error('Full error details:', {
@@ -201,7 +162,6 @@ export default function FridgePage() {
         details: err.details,
         hint: err.hint
       });
-      setError(err.message);
     }
   };
 
@@ -238,7 +198,6 @@ export default function FridgePage() {
         <div>
           <FridgeContainer items={fridgeItems} />
         </div>
-
 
         <InventoryContainer 
           items={inventoryItems} 

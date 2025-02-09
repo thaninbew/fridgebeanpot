@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { StorageProvider } from './contexts/StorageContext';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -36,57 +37,59 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <Routes>
-          <Route path="/" element={<Home />} />
+        <StorageProvider>
+          <Routes>
+            <Route path="/" element={<Home />} />
 
-          <Route
-            path="/inventory"
-            element={
-              <PrivateRoute>
-                <Inventory />
-              </PrivateRoute>
-            }
-          />
+            <Route
+              path="/inventory"
+              element={
+                <PrivateRoute>
+                  <Inventory />
+                </PrivateRoute>
+              }
+            />
 
-          <Route
-            path="/profile"
-            element={
-              <PrivateRoute>
-                <Profile />
-              </PrivateRoute>
-            }
-          />
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute>
+                  <Profile />
+                </PrivateRoute>
+              }
+            />
 
-          <Route
-            path="/login"
-            element={
-              <AuthRoute>
-                <Login />
-              </AuthRoute>
-            }
-          />
+            <Route
+              path="/login"
+              element={
+                <AuthRoute>
+                  <Login />
+                </AuthRoute>
+              }
+            />
 
-          <Route
-            path="/signup"
-            element={
-              <AuthRoute>
-                <Signup />
-              </AuthRoute>
-            }
-          />
+            <Route
+              path="/signup"
+              element={
+                <AuthRoute>
+                  <Signup />
+                </AuthRoute>
+              }
+            />
 
-          <Route
-            path="/fridge"
-            element={
-              <PrivateRoute>
-                <FridgePage />
-              </PrivateRoute>
-            }
-          />
+            <Route
+              path="/fridge"
+              element={
+                <PrivateRoute>
+                  <FridgePage />
+                </PrivateRoute>
+              }
+            />
 
-          <Route path="/map" element={<Map />} />
-          <Route path="/explore" element={<Recs />} />
-        </Routes>
+            <Route path="/map" element={<Map />} />
+            <Route path="/explore" element={<Recs />} />
+          </Routes>
+        </StorageProvider>
       </AuthProvider>
     </Router>
   );
