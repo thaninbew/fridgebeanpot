@@ -14,8 +14,19 @@
     margin-left: -200px;
     position: absolute;
     z-index: -150;
+
+    animation: spin 5s linear infinite;
+
 }
 
+@keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
 .text {
     padding-top: 40%;
     padding-left: 40px;

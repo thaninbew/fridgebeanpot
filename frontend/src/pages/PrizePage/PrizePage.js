@@ -19,15 +19,15 @@ export default function PrizePage() {
 
       <img styleName={styles.chicken} src="./Prize/chicken.png"></img>
 
-
-      </div>
-
-      <Link to='/claim'>
+     <Link to='/claim'>
       <button className="w-[25vw] h-[55px] bg-[#ffdc90] rounded-[50px] shadow-[0px_3px_0px_0px_rgba(0,0,0,1)]
                    active:shadow-[inset_0px_1px_0px_rgba(0,0,0,1)] border border-black
-                   flex items-center justify-center align-center 
-                   disabled:opacity-50 disabled:cursor-not-allowed"> Yay!</button>
+                   items-center justify-center align-center 
+                   disabled:opacity-50 disabled:cursor-not-allowed m-[80px]"> Yay!</button>
       </Link>
+      </div>
+
+ 
       
       
     </div>
