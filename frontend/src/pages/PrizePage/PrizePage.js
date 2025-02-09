@@ -18,27 +18,23 @@ export default function PrizePage() {
   }, [restaurant]); // Only re-run if restaurant changes
   
   return (
-    <div>
+    <div className={styles.wrapper}>
       <Navbar />
-      <div className={styles.wrapper}/>
-
       <div className={styles.text}>
-      <h1 className="align-center justify-center text-4xl font-bold">
-        Wow!</h1>
-      <h1>You got {item.display_name}!</h1>
-      <div/>
-      <img className={styles.surprise} src="./Prize/surprise.png" alt="Surprise icon"/>
+        <h1 className="text-4xl font-bold mb-4">Wow!</h1>
+        <h1>You got {item.display_name}!</h1>
+        
+        <img className={styles.surprise} src="./Prize/surprise.png" alt="Surprise icon"/>
+        <img className={styles.chicken} src={item.image_url} alt="Prize item"/>
 
-      <img className={styles.chicken} src={item.image_url} alt="Prize item"/>
-
-      <Link to='/claim'>
-        <button className="w-[25vw] h-[55px] bg-[#ffdc90] rounded-[50px] shadow-[0px_3px_0px_0px_rgba(0,0,0,1)]
-                   active:shadow-[inset_0px_1px_0px_rgba(0,0,0,1)] border border-black
-                   items-center justify-center align-center 
-                   disabled:opacity-50 disabled:cursor-not-allowed m-[80px]">
-          Yay!
-        </button>
-      </Link>
+        <Link to='/claim'>
+          <button className="w-[25vw] h-[10vw] bg-[#ffdc90] rounded-[50px] shadow-[0px_3px_0px_0px_rgba(0,0,0,1)]
+                     active:shadow-[inset_0px_1px_0px_rgba(0,0,0,1)] border border-black
+                     items-center justify-center align-center 
+                     disabled:opacity-50 disabled:cursor-not-allowed m-[80px]">
+            Yay!
+          </button>
+        </Link>
       </div>
     </div>
   );
