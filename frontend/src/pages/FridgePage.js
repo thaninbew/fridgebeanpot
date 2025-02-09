@@ -17,6 +17,7 @@ import { useAuth } from '../contexts/AuthContext';
 import Navbar from '../components/Navbar';
 import { useStorage } from '../contexts/StorageContext';
 import { useLocation } from 'react-router-dom';
+import { GiKnapsack } from "react-icons/gi";
 
 export default function FridgePage() {
   const { fridgeItems, inventoryItems, loading, error, setFridgeItems, setInventoryItems } = useStorage();
@@ -307,7 +308,7 @@ export default function FridgePage() {
       modifiers={[restrictToWindowEdges]}
     >
       <div className="container mx-auto px-4 py-8 pt-16 min-h-screen touch-none pb-24">
-        <h1 className="text-4xl font-bold mb-8 mt-16 pl-4">My Fridge</h1>
+        <h1 className="text-4xl font-bold mb-8 mt-10 pl-4">My Fridge</h1>
         <div>
           <FridgeContainer items={fridgeItems} />
         </div>
@@ -326,12 +327,12 @@ export default function FridgePage() {
               </div>
             </div>
           ) : (
-            <div className="flex justify-center">
+            <div className="flex items-end float-end">
               <button
                 onClick={() => setIsInventoryOpen(true)}
-                className="w-48 h-16 bg-[#84A59D] rounded-[45.50px] mt-[12%] border-2 border-black flex items-center justify-center transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 "
+                className="w-20 h-20 bg-[#84A59D] rounded-[50px] mt-[50%] border-2 border-black flex items-center justify-center transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 "
               >
-                <span className="text-black font-medium text-lg">Open Inventory</span>
+                <GiKnapsack className="text-4xl"/>
               </button>
             </div>
           )}
