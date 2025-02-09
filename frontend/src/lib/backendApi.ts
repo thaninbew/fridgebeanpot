@@ -15,20 +15,24 @@ export interface Restaurant {
 export const restaurantCache = {
   cacheKey: "localRestaurantCache",
 
-  getAllRestaurants: (): Restaurant[] => {
+  getAllRestaurants: async (): Promise<Restaurant[]> => {
     const data = localStorage.getItem(restaurantCache.cacheKey);
-    return data ? JSON.parse(data) : [];
+    const cachedData = data ? JSON.parse(data) as Restaurant[] : [];
+    if (cachedData.length == 0) {
+      return await backendApi.fetchLocalRestaurants();
+    }
+    return cachedData;
   },
 
-  addRestaurant: (restaurant: Restaurant) => {
-    const data = restaurantCache.getAllRestaurants();
+  addRestaurant: async (restaurant: Restaurant) => {
+    const data = await restaurantCache.getAllRestaurants();
     data.push(restaurant);
     restaurantCache.updateCache(data);
   },
 
-  removeRestaurant: (name: string) => {
+  removeRestaurant: async (name: string) => {
     restaurantCache.updateCache(
-      restaurantCache.getAllRestaurants().filter((r) => r.name !== name)
+      (await restaurantCache.getAllRestaurants()).filter((r) => r.name !== name)
     );
   },
 
@@ -72,7 +76,7 @@ export const backendApi = {
   // },
 
   fetchLocalRestaurants: async (
-    location: string | null
+    location?: string
   ): Promise<Restaurant[]> => {
     console.log(BACKEND_URL);
     let normalizedLocation: string;
