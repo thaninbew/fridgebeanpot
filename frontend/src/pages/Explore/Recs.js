@@ -51,7 +51,7 @@ export default function Recs() {
         <div>
             <ExploreNavBar />
       
-            <p className="font-bold text-2xl m-11 mb-4"> Recommended </p>
+            <p className="font-bold text-2xl m-11 mb-4 "> Recommended </p>
             <div className="w-auto overflow-x-scroll ml-[10px] p-[15px] pt-0 whitespace-nowrap flex flex-row">
                 {recommended.length > 0 ? (
                     recommended.map((restaurant, index) => (
