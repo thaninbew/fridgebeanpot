@@ -1,11 +1,16 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { StorageProvider } from './contexts/StorageContext';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import FridgePage from './pages/FridgePage';
 import Inventory from './pages/Inventory';
+import ClaimPage from './pages/ClaimPage';
 import './App.css';
+import Profile from './pages/Profile/Profile';
+import Map from './pages/Explore/Map';
+import Recs from './pages/Explore/Recs';
 
 // Protected Route wrapper
 function PrivateRoute({ children }) {
@@ -18,8 +23,8 @@ function PrivateRoute({ children }) {
   return user ? children : <Navigate to="/login" />;
 }
 
-// Public Route wrapper (redirects to fridge if already authenticated)
-function PublicRoute({ children }) {
+// Auth Route wrapper (only redirects auth pages when logged in)
+function AuthRoute({ children }) {
   const { user, loading } = useAuth();
   
   if (loading) {
@@ -33,44 +38,68 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <Routes>
-          <Route path="/" element={<Home />} />
+        <StorageProvider>
+          <Routes>
+            <Route path="/" element={<Home />} />
 
-          <Route
-            path="/Inventory"
-            element={
-              <PublicRoute>
-                <Inventory />
-              </PublicRoute>
-            }
-          />
+            <Route
+              path="/claim"
+              element={
+                <PrivateRoute>
+                  <ClaimPage />
+                </PrivateRoute>
+              }
+            />
 
-          <Route
-            path="/login"
-            element={
-              <PublicRoute>
-                <Login />
-              </PublicRoute>
-            }
-          />
+            <Route
+              path="/inventory"
+              element={
+                <PrivateRoute>
+                  <Inventory />
+                </PrivateRoute>
+              }
+            />
 
-          <Route
-            path="/signup"
-            element={
-              <PublicRoute>
-                <Signup />
-              </PublicRoute>
-            }
-          />
-          <Route
-            path="/fridge"
-            element={
-              <PrivateRoute>
-                <FridgePage />
-              </PrivateRoute>
-            }
-          />
-        </Routes>
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute>
+                  <Profile />
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/login"
+              element={
+                <AuthRoute>
+                  <Login />
+                </AuthRoute>
+              }
+            />
+
+            <Route
+              path="/signup"
+              element={
+                <AuthRoute>
+                  <Signup />
+                </AuthRoute>
+              }
+            />
+
+            <Route
+              path="/fridge"
+              element={
+                <PrivateRoute>
+                  <FridgePage />
+                </PrivateRoute>
+              }
+            />
+
+            <Route path="/map" element={<Map />} />
+            <Route path="/explore" element={<Recs />} />
+          </Routes>
+        </StorageProvider>
       </AuthProvider>
     </Router>
   );

@@ -1,54 +1,28 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
-import DraggableItem from './DraggableItem';
+import { FridgeSlot } from './FridgeSlot';
 
-function FridgeSlot({ position, item }) {
-  const { setNodeRef, isOver } = useDroppable({
-    id: `fridge-slot-${position}`,
-    data: {
-      container: 'fridge',
-      position: position,
-      type: 'slot'
-    }
-  });
+// Define positions for each of the 12 slots (as shown above)
+const slotPositions = [
+  { left: '24%', top: '17%' },
+  { left: '50%', top: '17%' },
+  { left: '76%', top: '17%' },
+  { left: '24%', top: '38%' },
+  { left: '50%', top: '38%' },
+  { left: '76%', top: '38%' },
 
-  return (
-    <div 
-      ref={setNodeRef}
-      className={`relative ${isOver ? 'ring-2 ring-blue-400' : ''}`}
-    >
-      {item ? (
-        <DraggableItem
-          item={item}
-          index={position}
-          container="fridge"
-          className="bg-blue-50 border-blue-300"
-          textClassName="text-blue-600"
-        />
-      ) : (
-        <div
-          className={`aspect-square bg-gray-100 rounded-lg border-2 border-dashed 
-            ${isOver ? 'border-blue-400 bg-blue-50' : 'border-gray-300'} 
-            flex items-center justify-center transition-colors duration-200`}
-        >
-          <span className="text-gray-400">Slot {position}</span>
-        </div>
-      )}
-    </div>
-  );
-}
+  { left: '24%', top: '59%' },
+  { left: '50%', top: '59%' },
+  { left: '76%', top: '59%' },
 
-FridgeSlot.propTypes = {
-  position: PropTypes.number.isRequired,
-  item: PropTypes.shape({
-    id: PropTypes.string,
-    item_name: PropTypes.string,
-    position: PropTypes.number,
-    user_id: PropTypes.string
-  })
-};
+  { left: '24%', top: '78.5%' },
+
+  { left: '50%', top: '78.5%' },
+  { left: '76%', top: '78.5%' }
+
+
+];
 
 export default function FridgeContainer({ items }) {
   // Create an array of exactly 12 slots (0-11)
@@ -61,14 +35,33 @@ export default function FridgeContainer({ items }) {
   });
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow">
-      <SortableContext items={items.map(item => item.id)} strategy={rectSortingStrategy}>
-        <div className="grid grid-cols-3 gap-4">
-          {slots.map(({ position, item }) => (
-            <FridgeSlot key={position} position={position} item={item} />
-          ))}
+    <div className="relative w-full max-w-4xl mx-auto">
+      {/* SVG Background Container */}
+      <div className="fixed w-full h-screen -z-10 left-1/2 -translate-x-1/2">
+        <img 
+          src="/fridge.svg" 
+          alt="Fridge" 
+          className="absolute w-full h-full object-contain transform scale-[2] mt-[-19%]"
+        />
+      </div>
+
+      {/* Slots Container */}
+      <div className="relative w-full pb-[120%]">
+        <div className="absolute inset-0">
+          <div className="relative w-full h-full">
+            <SortableContext items={items.map(item => item.id)} strategy={rectSortingStrategy}>
+              {slots.map(({ position, item }) => (
+                <FridgeSlot 
+                  key={position} 
+                  position={position} 
+                  item={item} 
+                  slotPosition={slotPositions[position]} 
+                />
+              ))}
+            </SortableContext>
+          </div>
         </div>
-      </SortableContext>
+      </div>
     </div>
   );
 }
@@ -82,4 +75,4 @@ FridgeContainer.propTypes = {
       user_id: PropTypes.string
     })
   ).isRequired
-}; 
+};
