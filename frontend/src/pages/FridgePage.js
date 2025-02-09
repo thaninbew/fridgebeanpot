@@ -6,7 +6,8 @@ import {
   TouchSensor,
   MouseSensor,
   useSensor,
-  useSensors
+  useSensors,
+  useDroppable
 } from '@dnd-kit/core';
 import { restrictToWindowEdges } from '@dnd-kit/modifiers';
 import FridgeContainer from '../components/FridgeContainer';
@@ -24,6 +25,7 @@ export default function FridgePage() {
   const { user } = useAuth();
   const location = useLocation();
   const closeTimerRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   // Handle opening inventory if navigated from another page
   useEffect(() => {
@@ -57,6 +59,16 @@ export default function FridgePage() {
   });
 
   const sensors = useSensors(mouseSensor, touchSensor);
+
+  // Add inventory drop zone
+  const { setNodeRef: setInventoryDropZoneRef } = useDroppable({
+    id: 'inventory-drop-zone',
+    data: {
+      container: 'inventory',
+      type: 'slot',
+      position: inventoryItems.length
+    }
+  });
 
   // Helper function to reorganize inventory items
   const reorganizeInventory = async (optimisticItems = null) => {
@@ -94,6 +106,7 @@ export default function FridgePage() {
 
   const handleDragStart = (event) => {
     setActiveId(event.active.id);
+    setIsDragging(true);
     
     if (isInventoryOpen && event.active.data.current?.container === 'inventory') {
       if (closeTimerRef.current) {
@@ -113,18 +126,12 @@ export default function FridgePage() {
       closeTimerRef.current = null;
     }
 
-    const { active, over } = event;
-    console.log('Drag End Event:', {
-      activeId: active.id,
-      activeData: active.data.current,
-      overId: over?.id,
-      overData: over?.data.current,
-    });
-    
+    setIsDragging(false);
     setActiveId(null);
 
+    const { active, over } = event;
+    
     if (!over) {
-      console.log('No valid drop target found');
       return;
     }
 
@@ -136,23 +143,9 @@ export default function FridgePage() {
       ? over.data.current.position 
       : over.data.current?.item?.position;
 
-    console.log('Container Info:', {
-      sourceContainer,
-      destinationContainer,
-      position,
-      overData: over.data.current
-    });
-
     // Only require position for fridge-to-fridge moves
     const isFridgeToFridge = sourceContainer === 'fridge' && destinationContainer === 'fridge';
     if (!sourceContainer || !destinationContainer || (isFridgeToFridge && typeof position !== 'number')) {
-      console.log('Missing required drop information', { 
-        sourceContainer, 
-        destinationContainer, 
-        position,
-        isFridgeToFridge,
-        overData: over.data.current 
-      });
       return;
     }
 
@@ -187,7 +180,27 @@ export default function FridgePage() {
           }
         }
       } else {
-        if (destinationContainer === 'fridge') {
+        if (destinationContainer === 'inventory') {
+          // Moving to inventory - Optimistic update
+          const activeItem = fridgeItems.find(item => item.id === active.id);
+          const newFridgeItems = fridgeItems.filter(item => item.id !== active.id);
+          setFridgeItems(newFridgeItems);
+
+          const newInventoryItems = [...inventoryItems, { ...activeItem, position: inventoryItems.length }]
+            .sort((a, b) => a.position - b.position)
+            .map((item, index) => ({ ...item, position: index }));
+          
+          await reorganizeInventory(newInventoryItems);
+
+          // Update database
+          await storageAPI.moveToInventory(active.id);
+          
+          // Update remaining fridge positions
+          const updates = newFridgeItems.map(item => 
+            storageAPI.updateFridgeItemPosition(item.id, item.position)
+          );
+          await Promise.all(updates);
+        } else if (destinationContainer === 'fridge') {
           const occupiedItem = fridgeItems.find(item => item.position === position);
           
           if (occupiedItem) {
@@ -230,26 +243,6 @@ export default function FridgePage() {
             // Update database
             await storageAPI.moveToFridge(active.id, position);
           }
-        } else {
-          // Moving to inventory - Optimistic update
-          const activeItem = fridgeItems.find(item => item.id === active.id);
-          const newFridgeItems = fridgeItems.filter(item => item.id !== active.id);
-          setFridgeItems(newFridgeItems);
-
-          const newInventoryItems = [...inventoryItems, { ...activeItem, position: inventoryItems.length }]
-            .sort((a, b) => a.position - b.position)
-            .map((item, index) => ({ ...item, position: index }));
-          
-          await reorganizeInventory(newInventoryItems);
-
-          // Update database
-          await storageAPI.moveToInventory(active.id);
-          
-          // Update remaining fridge positions
-          const updates = newFridgeItems.map(item => 
-            storageAPI.updateFridgeItemPosition(item.id, item.position)
-          );
-          await Promise.all(updates);
         }
       }
 
@@ -318,6 +311,20 @@ export default function FridgePage() {
         <div>
           <FridgeContainer items={fridgeItems} />
         </div>
+
+        {/* Inventory Drop Zone - only show when dragging from fridge */}
+        {isDragging && activeId && fridgeItems.find(item => item.id === activeId) && (
+          <div 
+            ref={setInventoryDropZoneRef}
+            className="mt-6 h-24 border-2 border-dashed rounded-lg flex items-center justify-center border-gray-300"
+          >
+            <div className="text-center">
+              <span className="text-gray-500 font-medium">
+              ↓ Inventory ↓
+              </span>
+            </div>
+          </div>
+        )}
 
         <InventoryContainer 
           items={inventoryItems} 
