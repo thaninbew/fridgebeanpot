@@ -343,7 +343,7 @@ export default function FridgePage() {
           {isDragging && activeId && fridgeItems.find(item => item.id === activeId) ? (
             <div 
               ref={setInventoryDropZoneRef}
-              className="w-full h-24 border-2 border-dashed rounded-lg flex items-center justify-center border-gray-300"
+              className="w-full h-32 border-2 border-dashed rounded-lg flex items-center justify-center border-gray-600"
             >
               <div className="text-center">
                 <span className="text-gray-500 font-medium">
