@@ -59,6 +59,7 @@ export default function ClaimPage() {
                 name={restaurant.name}
                 photo={restaurant.image || "/freaky-bean.svg"}
                 location={restaurant.address || "Address not available"}
+                restaurant={restaurant}
               />
             ))
           ) : (

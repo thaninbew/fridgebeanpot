@@ -3,11 +3,11 @@ import { FaLocationDot } from "react-icons/fa6";
 import { IoMdArrowDropright } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 
-export default function ClaimComponent({ name, photo, location }) {
+export default function ClaimComponent({ name, photo, location, restaurant }) {
   const navigate = useNavigate();
 
   const handleClaim = () => {
-    navigate('/loading');
+    navigate('/loading', {state: {restaurant}});
   };
 
   return (

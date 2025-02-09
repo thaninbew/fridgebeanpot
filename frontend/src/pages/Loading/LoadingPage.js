@@ -1,17 +1,19 @@
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function LoadingPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const restaurant = location.state?.restaurant;
 
   useEffect(() => {
     // Simulate loading delay
     const timer = setTimeout(() => {
-      navigate('/PrizePage'); // Navigate to prize page after delay
+      navigate('/PrizePage', {state: {restaurant}}); // Navigate to prize page after delay
     }, 2000); // 2 second delay
 
     return () => clearTimeout(timer);
-  }, [navigate]);
+  }, [navigate, restaurant]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-white">
