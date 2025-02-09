@@ -56,7 +56,7 @@ export default function Navbar() {
                         </button>
                     </Link>
 
-                    <Link to='/map'>
+                    <Link to='/Profile'>
                         <button 
                             type="button" 
                             className="items-center justify-center px-6" 
@@ -64,8 +64,8 @@ export default function Navbar() {
                         >
                             <img 
                                 src="/nav/profile.svg" 
-                                alt="Map"
-                                className={`${activeButton === 4 || location.pathname === '/map' ? 'filter brightness-0' : ''}`} 
+                                alt="Profile"
+                                className={`${activeButton === 4 || location.pathname === '/Profile' ? 'filter brightness-0' : ''}`} 
                             />
                         </button>
                     </Link>
