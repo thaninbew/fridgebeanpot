@@ -6,7 +6,7 @@ python-jose[cryptography]>=3.3.0
 passlib[bcrypt]>=1.7.4
 python-multipart>=0.0.9
 pydantic>=2.6.1 
-googlemaps
+googlemaps==4.10.0
 python-dotenv
 openai
 slowapi
