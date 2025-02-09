@@ -4,7 +4,11 @@ export default function RecComponent({rating, restaurant, cuisine, image}) {
     
 return (
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     <div className="">
+=======
+        <div className="">
+>>>>>>> Stashed changes
 =======
         <div className="">
 >>>>>>> Stashed changes
