@@ -127,7 +127,7 @@ limiter = Limiter(key_func=get_remote_address)
 
 @app.get("/api/get-restaurants")
 @limiter.limit("5/minute")  # 5 requests per minute
-def get_restaurants(request: Request, location: str, user = Depends(get_user)):
+def get_restaurants(request: Request, location: str):
     return find_locations(location)
 
 # @app.get("/api/get-map-embed", response_class=HTMLResponse)
