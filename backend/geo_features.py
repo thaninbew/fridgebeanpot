@@ -3,9 +3,9 @@ import os
 from dotenv import load_dotenv
 from openai import OpenAI
 from pydantic import BaseModel, Field
-from enum import Enum
 import instructor
 from typing import List
+from items import FoodGroupID
 
 load_dotenv()
 
@@ -18,18 +18,6 @@ pplx_client = OpenAI(
 openai_client = instructor.from_openai(OpenAI(api_key=os.getenv("OPENAI_KEY")))
 
 
-class FoodItemID(str, Enum):
-    PANCAKES = "pancakes"
-    SUSHI = "sushi"
-    RAMEN = "ramen"
-    FRIED_CHICKEN = "fried_chicken"
-    PIZZA = "pizza"
-    BURGER = "burger"
-    SANDWICH = "sandwich"
-    TACO = "taco"
-    MYSTERY = "mystery_box"
-
-
 class LLMLocationInfo(BaseModel):
     name: str = Field(description="the name of the restaurant")
     address: str = Field(description="the address of the restaurant")
@@ -39,8 +27,8 @@ class LLMLocationInfo(BaseModel):
     reasoning: str = Field(
         description="one-sentence explanation of your response to is_local"
     )
-    matching_item: FoodItemID = Field(
-        description="the available food item which most closely aligns with the restaurant"
+    matching_item: FoodGroupID = Field(
+        description="the available food group which most closely aligns with the restaurant",
     )
 
 
