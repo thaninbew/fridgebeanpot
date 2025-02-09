@@ -1,10 +1,12 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { StorageProvider } from './contexts/StorageContext';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import FridgePage from './pages/FridgePage';
 import Inventory from './pages/Inventory';
+import ClaimPage from './pages/ClaimPage';
 import './App.css';
 import Profile from './pages/Profile/Profile';
 import Map from './pages/Explore/Map';
@@ -36,57 +38,68 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <Routes>
-          <Route path="/" element={<Home />} />
+        <StorageProvider>
+          <Routes>
+            <Route path="/" element={<Home />} />
 
-          <Route
-            path="/inventory"
-            element={
-              <PrivateRoute>
-                <Inventory />
-              </PrivateRoute>
-            }
-          />
+            <Route
+              path="/claim"
+              element={
+                <PrivateRoute>
+                  <ClaimPage />
+                </PrivateRoute>
+              }
+            />
 
-          <Route
-            path="/profile"
-            element={
-              <PrivateRoute>
-                <Profile />
-              </PrivateRoute>
-            }
-          />
+            <Route
+              path="/inventory"
+              element={
+                <PrivateRoute>
+                  <Inventory />
+                </PrivateRoute>
+              }
+            />
 
-          <Route
-            path="/login"
-            element={
-              <AuthRoute>
-                <Login />
-              </AuthRoute>
-            }
-          />
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute>
+                  <Profile />
+                </PrivateRoute>
+              }
+            />
 
-          <Route
-            path="/signup"
-            element={
-              <AuthRoute>
-                <Signup />
-              </AuthRoute>
-            }
-          />
+            <Route
+              path="/login"
+              element={
+                <AuthRoute>
+                  <Login />
+                </AuthRoute>
+              }
+            />
 
-          <Route
-            path="/fridge"
-            element={
-              <PrivateRoute>
-                <FridgePage />
-              </PrivateRoute>
-            }
-          />
+            <Route
+              path="/signup"
+              element={
+                <AuthRoute>
+                  <Signup />
+                </AuthRoute>
+              }
+            />
 
-          <Route path="/map" element={<Map />} />
-          <Route path="/explore" element={<Recs />} />
-        </Routes>
+            <Route
+              path="/fridge"
+              element={
+                <PrivateRoute>
+                  <FridgePage />
+                </PrivateRoute>
+              }
+            />
+
+            <Route path="/map" element={<Map />} />
+            <Route path="/explore" element={<Recs />} />
+          </Routes>
+        </StorageProvider>
       </AuthProvider>
     </Router>
   );

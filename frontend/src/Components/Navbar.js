@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 export default function Navbar({ onInventoryClick, isInventoryOpen }) {
     const [activeButton, setActiveButton] = useState(false);
     const location = useLocation();
+    const navigate = useNavigate();
 
     // Reset active button when inventory closes
     useEffect(() => {
@@ -15,6 +16,18 @@ export default function Navbar({ onInventoryClick, isInventoryOpen }) {
 
     const handleButtonClick = (buttonIndex) => {
         setActiveButton(buttonIndex);
+    };
+
+    const handleInventoryClick = () => {
+        if (!isInventoryOpen) {
+            handleButtonClick(2);
+            if (location.pathname !== '/fridge') {
+                // Navigate to fridge with state indicating to open inventory
+                navigate('/fridge', { state: { openInventory: true } });
+            } else {
+                onInventoryClick();
+            }
+        }
     };
 
     return (
@@ -36,22 +49,19 @@ export default function Navbar({ onInventoryClick, isInventoryOpen }) {
                         </button>
                     </Link>
 
-                    <button 
-                        type="button" 
-                        className="items-center justify-center px-6" 
-                        onClick={() => {
-                            if (!isInventoryOpen) {
-                                handleButtonClick(2);
-                                onInventoryClick();
-                            }
-                        }}
-                    >
-                        <img 
-                            src="/nav/inventory.svg" 
-                            alt="Inventory"
-                            className={`${isInventoryOpen ? 'opacity-50' : activeButton === 2 ? 'filter brightness-0' : ''}`} 
-                        />
-                    </button>
+                    <Link to='/claim'>
+                        <button 
+                            type="button" 
+                            className="items-center justify-center px-6" 
+                            onClick={() => handleButtonClick(2)}
+                        >
+                            <img 
+                                src="/nav/inventory.svg" 
+                                alt="Claim"
+                                className={`${activeButton === 2 || location.pathname === '/claim' ? 'filter brightness-0' : ''}`} 
+                            />
+                        </button>
+                    </Link>
 
                     <Link to='/explore'>
                         <button 

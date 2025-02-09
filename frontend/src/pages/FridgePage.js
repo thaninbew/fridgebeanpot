@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   DndContext, 
   DragOverlay, 
@@ -6,7 +6,8 @@ import {
   TouchSensor,
   MouseSensor,
   useSensor,
-  useSensors
+  useSensors,
+  useDroppable
 } from '@dnd-kit/core';
 import { restrictToWindowEdges } from '@dnd-kit/modifiers';
 import FridgeContainer from '../components/FridgeContainer';
@@ -14,15 +15,34 @@ import InventoryContainer from '../components/InventoryContainer';
 import { storageAPI } from '../lib/storageApi';
 import { useAuth } from '../contexts/AuthContext';
 import Navbar from '../components/Navbar';
+import { useStorage } from '../contexts/StorageContext';
+import { useLocation } from 'react-router-dom';
 
 export default function FridgePage() {
-  const [fridgeItems, setFridgeItems] = useState([]);
-  const [inventoryItems, setInventoryItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { fridgeItems, inventoryItems, loading, error, setFridgeItems, setInventoryItems } = useStorage();
   const [activeId, setActiveId] = useState(null);
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const { user } = useAuth();
+  const location = useLocation();
+  const closeTimerRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  // Handle opening inventory if navigated from another page
+  useEffect(() => {
+    const shouldOpenInventory = location.state?.openInventory;
+    if (shouldOpenInventory && !loading) {
+      setIsInventoryOpen(true);
+    }
+  }, [location.state, loading]);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (closeTimerRef.current) {
+        clearTimeout(closeTimerRef.current);
+      }
+    };
+  }, []);
 
   // Configure sensors for both mouse and touch with better mobile settings
   const mouseSensor = useSensor(MouseSensor, {
@@ -40,67 +60,78 @@ export default function FridgePage() {
 
   const sensors = useSensors(mouseSensor, touchSensor);
 
-  const fetchItems = async () => {
+  // Add inventory drop zone
+  const { setNodeRef: setInventoryDropZoneRef } = useDroppable({
+    id: 'inventory-drop-zone',
+    data: {
+      container: 'inventory',
+      type: 'slot',
+      position: inventoryItems.length
+    }
+  });
+
+  // Helper function to reorganize inventory items
+  const reorganizeInventory = async (optimisticItems = null) => {
+    // If we have optimistic items, update UI immediately
+    if (optimisticItems) {
+      setInventoryItems(optimisticItems);
+    }
+
     try {
-      // Fetch both fridge and inventory items
-      const [fridgeResponse, inventoryResponse] = await Promise.all([
-        storageAPI.getFridgeItems(),
-        storageAPI.getInventoryItems()
-      ]);
-
-      // Handle fridge items
-      if (fridgeResponse.error) throw fridgeResponse.error;
-      setFridgeItems(fridgeResponse.data || []);
-
-      // Handle inventory items
-      if (inventoryResponse.error) throw inventoryResponse.error;
-      setInventoryItems(inventoryResponse.data || []);
+      // Sort inventory items by position
+      const sortedItems = optimisticItems || [...inventoryItems].sort((a, b) => a.position - b.position);
       
-      // Check if this is a new user (both fridge and inventory are empty)
-      if ((!fridgeResponse.data || fridgeResponse.data.length === 0) && 
-          (!inventoryResponse.data || inventoryResponse.data.length === 0)) {
-        console.log('New user detected, adding welcome item to fridge...');
-        const welcomeResponse = await storageAPI.addFridgeItem('Welcome Bean! 🫘');
-        if (welcomeResponse.error) throw welcomeResponse.error;
-        
-        // Refresh items to show the welcome item
-        const updatedFridgeResponse = await storageAPI.getFridgeItems();
-        if (updatedFridgeResponse.error) throw updatedFridgeResponse.error;
-        setFridgeItems(updatedFridgeResponse.data || []);
+      // Update positions in database
+      const updates = sortedItems.map((item, index) => {
+        if (item.position !== index) {
+          return storageAPI.updateInventoryItemPosition(item.id, index);
+        }
+        return Promise.resolve();
+      });
+      
+      await Promise.all(updates);
+      
+      // Only fetch from database if we didn't do optimistic update
+      if (!optimisticItems) {
+        const newInventoryItems = await storageAPI.getInventoryItems();
+        setInventoryItems(newInventoryItems.data || []);
       }
-      
-      setError(null);
     } catch (err) {
-      console.error('Error fetching items:', err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      console.error('Error reorganizing inventory:', err);
+      // If error occurs, fetch fresh data to ensure consistency
+      const newInventoryItems = await storageAPI.getInventoryItems();
+      setInventoryItems(newInventoryItems.data || []);
     }
   };
-
-  useEffect(() => {
-    if (user) {
-      fetchItems();
-    }
-  }, [user]);
 
   const handleDragStart = (event) => {
     setActiveId(event.active.id);
+    setIsDragging(true);
+    
+    if (isInventoryOpen && event.active.data.current?.container === 'inventory') {
+      if (closeTimerRef.current) {
+        clearTimeout(closeTimerRef.current);
+      }
+
+      closeTimerRef.current = setTimeout(() => {
+        setIsInventoryOpen(false);
+      }, 600);
+    }
   };
 
   const handleDragEnd = async (event) => {
-    const { active, over } = event;
-    console.log('Drag End Event:', {
-      activeId: active.id,
-      activeData: active.data.current,
-      overId: over?.id,
-      overData: over?.data.current,
-    });
-    
+    // Clear the close timer if it exists
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+
+    setIsDragging(false);
     setActiveId(null);
 
+    const { active, over } = event;
+    
     if (!over) {
-      console.log('No valid drop target found');
       return;
     }
 
@@ -112,97 +143,138 @@ export default function FridgePage() {
       ? over.data.current.position 
       : over.data.current?.item?.position;
 
-    console.log('Container Info:', {
-      sourceContainer,
-      destinationContainer,
-      position,
-      overData: over.data.current
-    });
-
     // Only require position for fridge-to-fridge moves
     const isFridgeToFridge = sourceContainer === 'fridge' && destinationContainer === 'fridge';
     if (!sourceContainer || !destinationContainer || (isFridgeToFridge && typeof position !== 'number')) {
-      console.log('Missing required drop information', { 
-        sourceContainer, 
-        destinationContainer, 
-        position,
-        isFridgeToFridge,
-        overData: over.data.current 
-      });
       return;
     }
 
     try {
       if (sourceContainer === destinationContainer) {
-        // Moving within the same container
         if (sourceContainer === 'fridge') {
           const activeItem = fridgeItems.find(item => item.id === active.id);
           const targetItem = fridgeItems.find(item => item.position === position);
 
-          // Don't swap if trying to drop onto itself
-          if (activeItem.id === targetItem?.id) {
-            console.log('Dropping item onto itself, ignoring');
-            return;
-          }
+          if (activeItem.id === targetItem?.id) return;
 
-          console.log('Attempting to swap items:', {
-            activeItem: {
-              id: activeItem?.id,
-              name: activeItem?.item_name,
-              position: activeItem?.position
-            },
-            targetItem: {
-              id: targetItem?.id,
-              name: targetItem?.item_name,
-              position: targetItem?.position
-            }
-          });
-
+          // Optimistic update for fridge swaps
+          const newFridgeItems = [...fridgeItems];
           if (targetItem) {
-            // If there's a target item, swap positions
-            const response = await storageAPI.swapFridgePositions(activeItem.id, targetItem.id);
-            if (response?.error) throw response.error;
+            // Swap positions in frontend immediately
+            const activeIndex = newFridgeItems.findIndex(item => item.id === activeItem.id);
+            const targetIndex = newFridgeItems.findIndex(item => item.id === targetItem.id);
+            [newFridgeItems[activeIndex].position, newFridgeItems[targetIndex].position] = 
+            [newFridgeItems[targetIndex].position, newFridgeItems[activeIndex].position];
+            setFridgeItems(newFridgeItems);
+
+            // Update database
+            await storageAPI.swapFridgePositions(activeItem.id, targetItem.id);
           } else {
-            // If moving to an empty slot, just update position
-            const response = await storageAPI.updateFridgeItemPosition(active.id, position);
-            if (response?.error) throw response.error;
+            // Update position in frontend immediately
+            const activeIndex = newFridgeItems.findIndex(item => item.id === activeItem.id);
+            newFridgeItems[activeIndex].position = position;
+            setFridgeItems(newFridgeItems);
+
+            // Update database
+            await storageAPI.updateFridgeItemPosition(active.id, position);
           }
         }
-        // For inventory, we don't need to update positions
       } else {
-        // Moving between containers
-        console.log('Moving between containers:', {
-          from: sourceContainer,
-          to: destinationContainer,
-          itemId: active.id,
-          position: position
-        });
-        if (destinationContainer === 'fridge') {
-          // When moving to fridge, we need the target position
-          if (typeof position !== 'number') {
-            console.log('Missing position for fridge move');
-            return;
+        if (destinationContainer === 'inventory') {
+          // Moving to inventory - Optimistic update
+          const activeItem = fridgeItems.find(item => item.id === active.id);
+          const newFridgeItems = fridgeItems.filter(item => item.id !== active.id);
+          setFridgeItems(newFridgeItems);
+
+          const newInventoryItems = [...inventoryItems, { ...activeItem, position: inventoryItems.length }]
+            .sort((a, b) => a.position - b.position)
+            .map((item, index) => ({ ...item, position: index }));
+          
+          await reorganizeInventory(newInventoryItems);
+
+          // Update database
+          await storageAPI.moveToInventory(active.id);
+          
+          // Update remaining fridge positions
+          const updates = newFridgeItems.map(item => 
+            storageAPI.updateFridgeItemPosition(item.id, item.position)
+          );
+          await Promise.all(updates);
+        } else if (destinationContainer === 'fridge') {
+          const occupiedItem = fridgeItems.find(item => item.position === position);
+          
+          if (occupiedItem) {
+            // Optimistic updates for swap between containers
+            const newFridgeItems = fridgeItems.filter(item => item.id !== occupiedItem.id);
+            const activeItem = inventoryItems.find(item => item.id === active.id);
+            activeItem.position = position;
+            newFridgeItems.push(activeItem);
+            setFridgeItems(newFridgeItems);
+
+            // Optimistic inventory update
+            const newInventoryItems = inventoryItems.filter(item => item.id !== active.id);
+            occupiedItem.position = activeItem.position;
+            newInventoryItems.push(occupiedItem);
+            
+            // Sort and reposition inventory items
+            const sortedInventoryItems = newInventoryItems.sort((a, b) => a.position - b.position)
+              .map((item, index) => ({ ...item, position: index }));
+            
+            // Update UI immediately
+            await reorganizeInventory(sortedInventoryItems);
+
+            // Update database
+            await storageAPI.moveToInventory(occupiedItem.id);
+            await storageAPI.moveToFridge(active.id, position);
+          } else {
+            // Optimistic updates for moving to empty fridge slot
+            const newFridgeItems = [...fridgeItems];
+            const activeItem = inventoryItems.find(item => item.id === active.id);
+            activeItem.position = position;
+            newFridgeItems.push(activeItem);
+            setFridgeItems(newFridgeItems);
+
+            const newInventoryItems = inventoryItems.filter(item => item.id !== active.id)
+              .sort((a, b) => a.position - b.position)
+              .map((item, index) => ({ ...item, position: index }));
+            
+            await reorganizeInventory(newInventoryItems);
+
+            // Update database
+            await storageAPI.moveToFridge(active.id, position);
           }
-          const response = await storageAPI.moveToFridge(active.id, position);
-          if (response?.error) throw response.error;
-        } else {
-          const response = await storageAPI.moveToInventory(active.id);
-          if (response?.error) throw response.error;
         }
       }
 
-      // Refresh items after successful move
-      await fetchItems();
+      // Final fetch to ensure consistency
+      const [finalFridgeItems, finalInventoryItems] = await Promise.all([
+        storageAPI.getFridgeItems(),
+        storageAPI.getInventoryItems()
+      ]);
+      
+      setFridgeItems(finalFridgeItems.data || []);
+      setInventoryItems(finalInventoryItems.data || []);
+
     } catch (err) {
       console.error('Error handling drag and drop:', err);
-      console.error('Full error details:', {
-        message: err.message,
-        code: err.code,
-        details: err.details,
-        hint: err.hint
-      });
-      setError(err.message);
+      // On error, fetch fresh data to ensure consistency
+      const [newFridgeItems, newInventoryItems] = await Promise.all([
+        storageAPI.getFridgeItems(),
+        storageAPI.getInventoryItems()
+      ]);
+      
+      setFridgeItems(newFridgeItems.data || []);
+      setInventoryItems(newInventoryItems.data || []);
     }
+  };
+
+  // Add cleanup for drag cancel
+  const handleDragCancel = () => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+    setActiveId(null);
   };
 
   if (loading) {
@@ -230,6 +302,7 @@ export default function FridgePage() {
       sensors={sensors}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
+      onDragCancel={handleDragCancel}
       collisionDetection={pointerWithin}
       modifiers={[restrictToWindowEdges]}
     >
@@ -239,6 +312,30 @@ export default function FridgePage() {
           <FridgeContainer items={fridgeItems} />
         </div>
 
+        {/* Inventory Button or Drop Zone */}
+        <div className="mt-6">
+          {isDragging && activeId && fridgeItems.find(item => item.id === activeId) ? (
+            <div 
+              ref={setInventoryDropZoneRef}
+              className="w-full h-24 border-2 border-dashed rounded-lg flex items-center justify-center border-gray-300"
+            >
+              <div className="text-center">
+                <span className="text-gray-500 font-medium">
+                  ↓ Inventory ↓
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div className="flex justify-center">
+              <button
+                onClick={() => setIsInventoryOpen(true)}
+                className="w-48 h-16 bg-[#84A59D] rounded-[45.50px] border-2 border-black flex items-center justify-center transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              >
+                <span className="text-black font-medium text-lg">Open Inventory</span>
+              </button>
+            </div>
+          )}
+        </div>
 
         <InventoryContainer 
           items={inventoryItems} 
