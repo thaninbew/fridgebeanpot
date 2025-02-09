@@ -15,7 +15,7 @@ export default function ExploreNavBar() {
   return (
     <div className="flex flex-col w-screen items-center">
 
-      <div className="w-[80vw] h-[9vh] relative bg-[#f7f6f4] rounded-[50px] border-2 border-black mt-10 mb-10">
+      <div className="w-[70vw] h-[15vw] relative bg-[#f7f6f4] rounded-[50px] border-2 border-black mt-10">
         <div
           className={`absolute top-0 bottom-0 w-1/2 bg-[#84a59d] rounded-[50px] transition-transform duration-300 ${
             activeTab === 'map' ? 'translate-x-full' : 'translate-x-0'
