@@ -27,7 +27,7 @@ class LLMLocationInfo(BaseModel):
     reasoning: str = Field(
         description="one-sentence explanation of your response to is_local"
     )
-    matching_item: FoodGroupID = Field(
+    matching_item_group: FoodGroupID = Field(
         description="the available food group which most closely aligns with the restaurant",
     )
 
