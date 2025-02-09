@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   DndContext, 
   DragOverlay, 
@@ -23,6 +23,7 @@ export default function FridgePage() {
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const { user } = useAuth();
   const location = useLocation();
+  const closeTimerRef = useRef(null);
 
   // Handle opening inventory if navigated from another page
   useEffect(() => {
@@ -31,6 +32,15 @@ export default function FridgePage() {
       setIsInventoryOpen(true);
     }
   }, [location.state, loading]);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (closeTimerRef.current) {
+        clearTimeout(closeTimerRef.current);
+      }
+    };
+  }, []);
 
   // Configure sensors for both mouse and touch with better mobile settings
   const mouseSensor = useSensor(MouseSensor, {
@@ -50,9 +60,29 @@ export default function FridgePage() {
 
   const handleDragStart = (event) => {
     setActiveId(event.active.id);
+    
+    // If inventory is open and we're dragging an inventory item,
+    // start the timer to close it
+    if (isInventoryOpen && event.active.data.current?.container === 'inventory') {
+      // Clear any existing timer
+      if (closeTimerRef.current) {
+        clearTimeout(closeTimerRef.current);
+      }
+      
+      // Set new timer to close inventory after 1.5 seconds
+      closeTimerRef.current = setTimeout(() => {
+        setIsInventoryOpen(false);
+      }, 600);
+    }
   };
 
   const handleDragEnd = async (event) => {
+    // Clear the close timer if it exists
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+
     const { active, over } = event;
     console.log('Drag End Event:', {
       activeId: active.id,
@@ -175,6 +205,15 @@ export default function FridgePage() {
     }
   };
 
+  // Add cleanup for drag cancel
+  const handleDragCancel = () => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+    setActiveId(null);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -200,6 +239,7 @@ export default function FridgePage() {
       sensors={sensors}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
+      onDragCancel={handleDragCancel}
       collisionDetection={pointerWithin}
       modifiers={[restrictToWindowEdges]}
     >
