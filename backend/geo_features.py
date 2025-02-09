@@ -1,63 +1,101 @@
 import googlemaps
 import os
 from dotenv import load_dotenv
-from datetime import datetime
 from openai import OpenAI
-from pydantic import BaseModel
-import json
+from pydantic import BaseModel, Field
+import instructor
+from typing import List
+from items import FoodGroupID
 
 load_dotenv()
 
 gmaps = googlemaps.Client(key=os.getenv("GOOGLE_MAPS_KEY"))
 
-openai_client = OpenAI(
+pplx_client = OpenAI(
     api_key=os.getenv("PPLX_KEY"), base_url="https://api.perplexity.ai"
 )
 
-
-class IsLocalResponse(BaseModel):
-    is_local: bool
-    reasoning: str
+openai_client = instructor.from_openai(OpenAI(api_key=os.getenv("OPENAI_KEY")))
 
 
-def is_local(place_name: str, address: str):
-    response = openai_client.beta.chat.completions.parse(
-        model="sonar-pro",
+class LLMLocationInfo(BaseModel):
+    name: str = Field(description="the name of the restaurant")
+    address: str = Field(description="the address of the restaurant")
+    is_local: bool = Field(
+        description="whether the given restaurant is a local restaurant and not a large chain"
+    )
+    reasoning: str = Field(
+        description="one-sentence explanation of your response to is_local"
+    )
+    matching_item: FoodGroupID = Field(
+        description="the available food group which most closely aligns with the restaurant",
+    )
+
+
+class LLMLocationInfoArray(BaseModel):
+    content: List[LLMLocationInfo]
+
+
+def format_places(places: List[dict]) -> str:
+    return "\n".join([f" - \"{r['name']}\" at {r['address']}" for r in places])
+
+
+# get structured info about list of places
+def get_llm_location_info(
+    places: List[dict], overview: str = None
+) -> List[LLMLocationInfo]:
+    if not overview:
+        overview = get_llm_location_overview(places)
+    response = openai_client.chat.completions.create(
+        model="gpt-4o-mini",
         messages=[
             {
                 "role": "system",
                 "content": (
-                    "You will determine whether user-provided information about a restaurant indicates that it is a local establishment or not."
-                    "You will respond with a JSON object containing two fields:"
-                    "- `is_local`: a boolean representing whether the given restaurant is a local restaurant and not a large chain"
-                    "- `reasoning`: a string which is a one-sentence explanation of your response to is_local"
+                    "You are integrated in a restaurant discovery app. "
+                    "You will receive lists of restaurants along with an AI-generated overview of the list. "
+                    "You must produce a response according to the provided JSON schema based on this information. "
+                    "For the `matching_item` field, choose one of the existing food item IDs which best relates to "
+                    "each given restaurant, even if it is not a perfect match."
                 ),
             },
             {
                 "role": "user",
-                "content": f'Is "{place_name}" at {address} a local restaurant (and not a large chain)?',
+                "content": f"User-provided restaurants:\n{format_places(places)}\n\nAI-generated overview:\n\n{overview}",
             },
         ],
-        response_format=IsLocalResponse,
+        response_model=LLMLocationInfoArray,
     )
-    parsed = IsLocalResponse(**json.loads(response.choices[0].message.content))
-    breakpoint()
-    return parsed.is_local
+    return response.content
 
 
+# get a free-form response about the restaurants from perplexity
+def get_llm_location_overview(places: List[dict]) -> str:
+    response = pplx_client.chat.completions.create(
+        model="sonar",
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You are integrated in a restaurant discovery app. "
+                    "You will receive lists of restaurants, and must determine the following about each:\n"
+                    "- Whether the restaurant is a local restaurant and not a large chain along with a short, one-sentence explanation\n"
+                    "- A list of 1-3 food items which may be available at the restaurant\n"
+                ),
+            },
+            {
+                "role": "user",
+                "content": "Restaurant names and locations:\n" + format_places(places),
+            },
+        ],
+    )
 
-def find_locations(location, radius_meters=1000, max_results=20):
-    """
-    Search for local small restaurants within a given radius of a location.
+    return response.choices[0].message.content
 
-    Args:
-        location (str): Address or location to search around
-        radius_meters (int): Search radius in meters (default: 1000)
-        max_results (int): Maximum number of results to return (default: 20)
 
-    Returns:
-        list: List of restaurant details including name, address, rating, etc.
-    """
+def find_locations(
+    location, radius_meters=500, max_results=10, filter_local: bool = True
+):
     # First geocode the location to get coordinates
     geocode_result = gmaps.geocode(location)
 
@@ -73,6 +111,7 @@ def find_locations(location, radius_meters=1000, max_results=20):
         location=(lat, lng),
         radius=radius_meters,
         type="restaurant",
+        keyword="local"
         # rank_by='rating'  # This will prioritize better-rated places
     )
 
@@ -88,10 +127,8 @@ def find_locations(location, radius_meters=1000, max_results=20):
                 "rating",
                 "price_level",
                 "user_ratings_total",
-                "formatted_phone_number",
-                "website",
                 "opening_hours",
-                "reviews",
+                "website",
             ],
         )["result"]
 
@@ -109,6 +146,93 @@ def find_locations(location, radius_meters=1000, max_results=20):
                 "lng": place["geometry"]["location"]["lng"],
             },
         }
+        # restaurant.llm_info = get_llm_location_info(restaurant['name'], restaurant['address'])
         restaurants.append(restaurant)
 
-    return restaurants
+    llm_info = {v.name: v for v in get_llm_location_info(restaurants)}
+
+    ret = [
+        r | {"llm_info": llm_info[r["name"]]}
+        for r in restaurants
+        if (llm_info[r["name"]].is_local or not filter_local)
+    ]
+
+    return ret
+
+
+def generate_map_embed(locations: List[dict], center_location: dict = None, zoom: int = 14) -> str:
+    if not locations:
+        return None
+        
+    # Calculate center if not provided
+    if not center_location:
+        avg_lat = sum(loc['location']['lat'] for loc in locations) / len(locations)
+        avg_lng = sum(loc['location']['lng'] for loc in locations) / len(locations)
+        center_location = {'lat': avg_lat, 'lng': avg_lng}
+    
+    base_url = "https://maps.googleapis.com/maps/api/staticmap"
+    
+    # Create markers
+    markers = []
+    for i, loc in enumerate(locations):
+        lat = loc['location']['lat']
+        lng = loc['location']['lng']
+        label = chr(65 + i)  # A, B, C, etc.
+        markers.append(f"color:red|label:{label}|{lat},{lng}")
+    
+    # Build parameters
+    params = {
+        'center': f"{center_location['lat']},{center_location['lng']}",
+        'zoom': str(zoom),
+        'size': '600x400',
+        'maptype': 'roadmap',
+        'markers': markers,
+        'key': os.getenv('MAPS_EMBED_KEY')  # Different API key may be needed
+    }
+    
+    # Build URL
+    embed_url = base_url + '?' + '&'.join(
+        [f"{k}={','.join(v) if isinstance(v, list) else v}" for k, v in params.items()]
+    )
+    
+    return embed_url
+
+
+if __name__ == "__main__":
+    example_places = [
+        {
+            "name": "University House of Pizza",
+            "address": "452 Huntington Ave, Boston, MA 02115, USA",
+            "rating": 3.9,
+            "total_ratings": 536,
+            "price_level": 1,
+            "phone": None,
+            "website": "https://www.myuhop.com/",
+            "is_open_now": True,
+            "location": {"lat": 42.3386018, "lng": -71.0929388},
+        },
+        {
+            "name": "Panera Bread",
+            "address": "289 Huntington Ave, Boston, MA 02115, USA",
+            "rating": 3.9,
+            "total_ratings": 737,
+            "price_level": 2,
+            "phone": None,
+            "website": "https://www.panerabread.com/en-us/cafe/locations/ma/boston/289-huntington-avenue?utm_medium=local&utm_source=google&utm_campaign=dpm-dist&utm_term=202107&utm_content=main",
+            "is_open_now": True,
+            "location": {"lat": 42.341821, "lng": -71.086679},
+        },
+        {
+            "name": "Cappy's Pizza & Subs",
+            "address": "82 Westland Ave, Boston, MA 02115, USA",
+            "rating": 3.8,
+            "total_ratings": 506,
+            "price_level": 1,
+            "phone": None,
+            "website": "https://www.cappyspizza.com/",
+            "is_open_now": True,
+            "location": {"lat": 42.34374589999999, "lng": -71.0896072},
+        },
+    ]
+
+    example_overview = "Here's the information about each restaurant:\n\n1. **University House of Pizza**\n   - **Local or Chain**: Local restaurant, as it is not a widely recognized chain and is specific to the Boston area.\n   - **Food Items**:\n     - Cheese Pizza\n     - Buffalo Chicken Pizza\n     - The American Burger\n\n2. **Panera Bread**\n   - **Local or Chain**: Large chain, as Panera Bread is a well-known national brand with numerous locations across the U.S.\n   - **Food Items**:\n     - Broccoli Cheddar Soup\n     - Turkey Club Sandwich\n     - Cinnamon Crunch Bagel\n\n3. **Cappy's Pizza & Subs**\n   - **Local or Chain**: Local restaurant, as it appears to be a smaller, independent establishment specific to the Boston area.\n   - **Food Items**:\n     - Pizza Subs\n     - Meatball Subs\n     - Chicken Parmesan Subs\n\nNote: Specific menu items for \"Cappy's Pizza & Subs\" are not provided in the search results, so the items listed are typical for a pizza and subs establishment."

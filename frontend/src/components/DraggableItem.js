@@ -56,17 +56,21 @@ export default function DraggableItem({ item, index, container, className, textC
       style={style}
       {...attributes}
       {...listeners}
-      className={`aspect-square rounded-lg border-2 ${className} flex items-center justify-center p-2 
+      className={`aspect-square flex items-center justify-center 
         ${isDragging ? 'shadow-lg z-50' : ''} 
-        ${isOverCurrent ? 'ring-2 ring-offset-2 ring-blue-500' : ''} 
-        transition-shadow duration-200 touch-none select-none w-full h-full relative overflow-hidden`}
+        ${container === 'inventory' ? 'rounded-lg border-2 border-gray-200' : ''}
+        transition-shadow duration-200 touch-none select-none w-[80px] h-[80px] relative`}
     >
       {item.image_url ? (
-        <img 
-          src={item.image_url} 
-          alt={item.display_name || item.item_name}
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+        <div className="w-full h-full flex items-center justify-center p-1">
+          <img 
+            src={item.image_url} 
+            alt={item.display_name || item.item_name}
+            className="max-w-full max-h-full object-contain"
+            style={{ transform: 'scale(1.5)' }}
+            draggable="false"
+          />
+        </div>
       ) : (
         <div className="text-center w-full">
           <span className={`font-medium break-words ${textClassName}`}>

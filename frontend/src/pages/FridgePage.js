@@ -36,6 +36,22 @@ export default function FridgePage() {
     }
   }, [location.state, loading]);
 
+  // Run cleanup when page loads
+  useEffect(() => {
+    if (!loading) {
+      storageAPI.cleanupStorage().then(() => {
+        // Refresh items after cleanup
+        Promise.all([
+          storageAPI.getFridgeItems(),
+          storageAPI.getInventoryItems()
+        ]).then(([fridgeResponse, inventoryResponse]) => {
+          setFridgeItems(fridgeResponse.data || []);
+          setInventoryItems(inventoryResponse.data || []);
+        });
+      });
+    }
+  }, [loading]);
+
   // Cleanup timer on unmount
   useEffect(() => {
     return () => {
@@ -187,9 +203,13 @@ export default function FridgePage() {
           const newFridgeItems = fridgeItems.filter(item => item.id !== active.id);
           setFridgeItems(newFridgeItems);
 
-          const newInventoryItems = [...inventoryItems, { ...activeItem, position: inventoryItems.length }]
-            .sort((a, b) => a.position - b.position)
-            .map((item, index) => ({ ...item, position: index }));
+          // Calculate next inventory position
+          const nextPosition = inventoryItems.length > 0
+            ? Math.max(12, Math.max(...inventoryItems.map(item => item.position)) + 1)
+            : 12;
+
+          const newInventoryItems = [...inventoryItems, { ...activeItem, position: nextPosition }]
+            .sort((a, b) => a.position - b.position);
           
           await reorganizeInventory(newInventoryItems);
 
@@ -197,9 +217,11 @@ export default function FridgePage() {
           await storageAPI.moveToInventory(active.id);
           
           // Update remaining fridge positions
-          const updates = newFridgeItems.map(item => 
-            storageAPI.updateFridgeItemPosition(item.id, item.position)
-          );
+          const updates = newFridgeItems
+            .sort((a, b) => a.position - b.position)
+            .map((item, index) => 
+              storageAPI.updateFridgeItemPosition(item.id, index)
+            );
           await Promise.all(updates);
         } else if (destinationContainer === 'fridge') {
           const occupiedItem = fridgeItems.find(item => item.position === position);
@@ -247,6 +269,9 @@ export default function FridgePage() {
         }
       }
 
+      // Run cleanup after drag operations
+      await storageAPI.cleanupStorage();
+      
       // Final fetch to ensure consistency
       const [finalFridgeItems, finalInventoryItems] = await Promise.all([
         storageAPI.getFridgeItems(),
@@ -310,7 +335,7 @@ export default function FridgePage() {
       <div className="container mx-auto px-4 py-8 pt-16 min-h-screen touch-none pb-24">
         <h1 className="text-4xl font-bold mb-8 mt-10 pl-4">My Fridge</h1>
         <div>
-          <FridgeContainer items={fridgeItems} />
+          <FridgeContainer items={fridgeItems} isDragging={isDragging} />
         </div>
 
         {/* Inventory Button or Drop Zone */}
@@ -346,12 +371,24 @@ export default function FridgePage() {
       </div>
       <DragOverlay>
         {activeItem ? (
-          <div className="fixed aspect-square rounded-lg border-2 bg-blue-50 border-blue-300 flex items-center justify-center p-2 shadow-lg w-[80px] h-[80px] touch-none">
-            <div className="text-center">
-              <span className="text-blue-600 font-medium break-words">
-                {activeItem.item_name}
-              </span>
-            </div>
+          <div className="fixed aspect-square flex items-center justify-center w-[120px] h-[120px] touch-none transform -translate-x-1/2 -translate-y-1/2">
+            {activeItem.image_url ? (
+              <div className="w-full h-full flex items-center justify-center p-2">
+                <img 
+                  src={activeItem.image_url} 
+                  alt={activeItem.display_name || activeItem.item_name}
+                  className="max-w-full max-h-full object-contain"
+                  style={{ transform: 'scale(1.2)' }}
+                  draggable="false"
+                />
+              </div>
+            ) : (
+              <div className="text-center w-full">
+                <span className="text-blue-600 font-medium break-words">
+                  {activeItem.display_name || activeItem.item_name}
+                </span>
+              </div>
+            )}
           </div>
         ) : null}
       </DragOverlay>

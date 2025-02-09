@@ -1,4 +1,4 @@
-fastapi>=0.109.2
+fastapi[standard]
 uvicorn>=0.27.1
 python-dotenv>=1.0.1
 supabase>=2.3.4
@@ -9,3 +9,5 @@ pydantic>=2.6.1
 googlemaps
 python-dotenv
 openai
+slowapi
+https://github.com/instructor-ai/instructor/tree/73a90619a6dd7be588e6047d5909f67393157c7d
