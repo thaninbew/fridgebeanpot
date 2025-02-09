@@ -11,19 +11,8 @@ export default function Recs() {
         async function fetchRestaurants() {
             try {
                 setIsLoading(true);
-                // Try to get current position first
-                const position = await backendApi.getCurrentPosition();
-                const location = backendApi.normalizeLatLong(
-                    position.coords.latitude,
-                    position.coords.longitude
-                );
-                const allRestaurants = await backendApi.fetchLocalRestaurants(location);
+                const allRestaurants = await restaurantCache.getAllRestaurants();
                 setRestaurants(allRestaurants || []);
-            } catch (error) {
-                console.error('Error fetching restaurants:', error);
-                // Fallback to cached data if available
-                const cachedData = await restaurantCache.getAllRestaurants();
-                setRestaurants(cachedData || []);
             } finally {
                 setIsLoading(false);
             }

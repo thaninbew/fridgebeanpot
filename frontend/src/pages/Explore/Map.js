@@ -60,7 +60,7 @@ function RestaurantMarkers({ restaurants }) {
       {restaurants.map((restaurant, index) => (
         <Marker 
           key={index} 
-          position={[restaurant.location.lat, restaurant.location.long]}
+          position={[restaurant.location.lat, restaurant.location.lng]}
         >
           <Popup className="custom-popup">
             <div className="text-center">
@@ -92,18 +92,8 @@ export default function Map() {
       try {
         setIsLoading(true);
         // Try to get current position first
-        const position = await backendApi.getCurrentPosition();
-        const location = backendApi.normalizeLatLong(
-          position.coords.latitude,
-          position.coords.longitude
-        );
-        const allRestaurants = await backendApi.fetchLocalRestaurants(location);
+        const allRestaurants = await restaurantCache.getAllRestaurants();
         setRestaurants(allRestaurants || []);
-      } catch (error) {
-        console.error('Error fetching restaurants:', error);
-        // Fallback to cached data if available
-        const cachedData = await restaurantCache.getAllRestaurants();
-        setRestaurants(cachedData || []);
       } finally {
         setIsLoading(false);
       }

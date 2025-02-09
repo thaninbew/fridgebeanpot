@@ -3,7 +3,7 @@ export interface Restaurant {
   address: string;
   location: {
     lat: number;
-    long: number;
+    lng: number;
   };
   llm_info: {
     is_local: boolean;
