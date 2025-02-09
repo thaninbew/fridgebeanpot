@@ -21,7 +21,7 @@ export default function ClaimComponent({ name, photo, location }) {
               </div>
             </div>
 
-            <Link to="/claim">
+            <Link to="/PrizePage">
               <button
                 type="button"
                 className="text-end w-[10vw] h-[10vw] bg-[#84A59D] rounded-[50px] mt-[50%] border-2 border-black flex items-center justify-center transform hover:-translate-y-0.5 mt-[9vh] mr-1"

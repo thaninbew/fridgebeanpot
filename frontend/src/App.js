@@ -11,6 +11,7 @@ import './App.css';
 import Profile from './pages/Profile/Profile';
 import Map from './pages/Explore/Map';
 import Recs from './pages/Explore/Recs';
+import PrizePage from './pages/PrizePage/PrizePage';
 
 // Protected Route wrapper
 function PrivateRoute({ children }) {
@@ -47,6 +48,15 @@ function App() {
               element={
                 <PrivateRoute>
                   <ClaimPage />
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/PrizePage"
+              element={
+                <PrivateRoute>
+                  <PrizePage />
                 </PrivateRoute>
               }
             />

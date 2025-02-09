@@ -13,3 +13,7 @@
     position: absolute;
     z-index: -150;
 }
+
+.chicken {
+    width: 400px;
+}
