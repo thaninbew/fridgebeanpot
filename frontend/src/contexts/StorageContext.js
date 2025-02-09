@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { storageAPI } from '../lib/storageApi';
 import { useAuth } from './AuthContext';
+import { supabase } from '../lib/supabase';
 
 const StorageContext = createContext();
 
@@ -18,7 +19,7 @@ export function StorageProvider({ children }) {
   const fetchItems = async () => {
     try {
       setLoading(true);
-      // Fetch both fridge and inventory items
+      // Fetch both fridge and inventory items with metadata
       const [fridgeResponse, inventoryResponse] = await Promise.all([
         storageAPI.getFridgeItems(),
         storageAPI.getInventoryItems()
@@ -36,7 +37,10 @@ export function StorageProvider({ children }) {
       if ((!fridgeResponse.data || fridgeResponse.data.length === 0) && 
           (!inventoryResponse.data || inventoryResponse.data.length === 0)) {
         console.log('New user detected, adding welcome item to fridge...');
-        const welcomeResponse = await storageAPI.addFridgeItem('Welcome Bean! 🫘');
+        
+        // Add welcome item directly using its item_name from item_metadata
+        const welcomeResponse = await storageAPI.addFridgeItem('buttermilk_pancakes');
+        
         if (welcomeResponse.error) throw welcomeResponse.error;
         
         // Refresh items to show the welcome item

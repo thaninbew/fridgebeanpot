@@ -16,17 +16,41 @@ const handleStorageError = (error) => {
 export const storageAPI = {
   // Fridge
   getFridgeItems: async () => {
-    console.log('Calling getFridgeItems RPC...');
-    const { data, error } = await supabase.rpc('get_fridge_items');
-    console.log('getFridgeItems response:', { data, error });
-    return error ? handleStorageError(error) : { data };
+    const { data, error } = await supabase
+      .from('fridge_items')
+      .select(`
+        id,
+        item_name,
+        position,
+        user_id,
+        item_metadata (
+          name,
+          display_name,
+          group_name,
+          image_url
+        )
+      `)
+      .order('position');
+
+    // Transform the data to flatten the item_metadata
+    const transformedData = data?.map(item => ({
+      ...item,
+      display_name: item.item_metadata?.display_name,
+      group_name: item.item_metadata?.group_name,
+      image_url: item.item_metadata?.image_url
+    }));
+
+    return { data: transformedData, error };
   },
 
-  addFridgeItem: async (itemName) => {
-    console.log('Calling addFridgeItem RPC with:', itemName);
-    const { data, error } = await supabase.rpc('add_fridge_item', { item_name: itemName });
-    console.log('addFridgeItem response:', { data, error });
-    return error ? handleStorageError(error) : { data };
+  addFridgeItem: async (name, position = 0) => {
+    const { data, error } = await supabase
+      .from('fridge_items')
+      .insert({
+        item_name: name,
+        position
+      });
+    return { data, error };
   },
 
   updateFridgeItemPosition: async (itemId, newPosition) => {
@@ -58,10 +82,31 @@ export const storageAPI = {
 
   // Inventory
   getInventoryItems: async () => {
-    console.log('Calling getInventoryItems RPC...');
-    const { data, error } = await supabase.rpc('get_inventory_items');
-    console.log('getInventoryItems response:', { data, error });
-    return error ? handleStorageError(error) : { data };
+    const { data, error } = await supabase
+      .from('inventory_items')
+      .select(`
+        id,
+        item_name,
+        position,
+        user_id,
+        item_metadata (
+          name,
+          display_name,
+          group_name,
+          image_url
+        )
+      `)
+      .order('position');
+
+    // Transform the data to flatten the item_metadata
+    const transformedData = data?.map(item => ({
+      ...item,
+      display_name: item.item_metadata?.display_name,
+      group_name: item.item_metadata?.group_name,
+      image_url: item.item_metadata?.image_url
+    }));
+
+    return { data: transformedData, error };
   },
 
   addInventoryItem: async (itemName) => {
