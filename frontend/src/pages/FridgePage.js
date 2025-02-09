@@ -171,17 +171,38 @@ export default function FridgePage() {
           itemId: active.id,
           position: position
         });
+
         if (destinationContainer === 'fridge') {
-          // When moving to fridge, we need the target position
-          if (typeof position !== 'number') {
-            console.log('Missing position for fridge move');
-            return;
+          // When moving to fridge, find the first empty position
+          const occupiedPositions = fridgeItems.map(item => item.position);
+          let targetPosition = position;
+
+          // If the target position is occupied, find the next available one
+          if (occupiedPositions.includes(position)) {
+            for (let i = 0; i < 12; i++) {
+              if (!occupiedPositions.includes(i)) {
+                targetPosition = i;
+                break;
+              }
+            }
           }
-          const response = await storageAPI.moveToFridge(active.id, position);
+
+          const response = await storageAPI.moveToFridge(active.id, targetPosition);
           if (response?.error) throw response.error;
         } else {
+          // Moving to inventory - keep the same position in inventory
+          const activeItem = fridgeItems.find(item => item.id === active.id);
+          
+          // First update the position of the item being moved to inventory
           const response = await storageAPI.moveToInventory(active.id);
           if (response?.error) throw response.error;
+
+          // Then ensure remaining fridge items keep their positions
+          const remainingFridgeItems = fridgeItems.filter(item => item.id !== active.id);
+          for (const item of remainingFridgeItems) {
+            const updateResponse = await storageAPI.updateFridgeItemPosition(item.id, item.position);
+            if (updateResponse?.error) throw updateResponse.error;
+          }
         }
       }
 
