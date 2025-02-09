@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { restaurantCache } from './backendApi.ts';
 
 const handleStorageError = (error) => {
   console.log('Storage API error:', error);
@@ -94,5 +95,14 @@ export const storageAPI = {
     const { error } = await supabase.rpc('move_to_inventory', { item_id: itemId });
     console.log('moveToInventory response:', { error });
     return handleStorageError(error);
+  },
+
+  getGroupMembers: async (groupName) => {
+    console.log("Calling getGroupMembers RPC:", groupName);
+    const { data, error } = await supabase.rpc("get_group_members", { query_group: groupName });
+    console.log("getGroupMembers response:", { error });
+    return error ? handleStorageError(error) : { data };
   }
-}; 
+};
+
+window.restaurantCache = restaurantCache;
