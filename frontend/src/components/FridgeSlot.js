@@ -33,10 +33,13 @@ export function FridgeSlot({ position, item, slotPosition, isDragging }) {
         />
       ) : (
         <div
-          className={`aspect-square w-[80px] h-[80px] flex items-center justify-center transition-colors duration-200
-            ${isDragging ? 'border border-dashed border-gray-300' : ''}
-            ${isOver ? 'border-2 border-dashed border-[#f6bd60] bg-[#f6bd60]/10' : ''}`}
-        />
+  ref={setNodeRef}
+  className={`aspect-square w-[80px] h-[80px] flex items-center justify-center transition-colors duration-200
+    ${isOver ? 'border-2 border-[#f6bd60] bg-[#f6bd60]/10' : ''}
+    ${!isOver && isDragging ? 'border-2 border-dashed rounded-lg border-gray-600' : ''}
+  `}
+/>
+
       )}
     </div>
   );

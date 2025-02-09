@@ -31,7 +31,7 @@ export default function Navbar({ onInventoryClick, isInventoryOpen }) {
 
     return (
         <div className='flex items-center justify-center'>
-            <div className="fixed bottom-3 z-3 w-[95%] h-[73px] bg-[#f6bd60] rounded-[45.50px] border-2 border-black align flex justify-between;">
+            <div className="fixed bottom-6 z-3 w-[95%] h-[73px] bg-[#f6bd60] rounded-[45.50px] border-2 border-black align flex justify-between;">
                 <div className="flex items-center grid-cols-4 mx-auto">
                     
                     <Link to='/fridge'>
