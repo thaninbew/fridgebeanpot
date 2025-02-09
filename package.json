@@ -2,7 +2,7 @@
   "name": "fridgebeanpot",
   "version": "1.0.0",
   "scripts": {
-    "start-frontend": "cd frontend && npm run dev",
+    "start-frontend": "cd frontend && npm run start",
     "start-backend": "cd backend && python run.py",
     "start": "concurrently \"npm run start-frontend\" \"npm run start-backend\"",
     "build": "cd frontend && npm run build",

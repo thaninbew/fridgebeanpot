@@ -10,4 +10,4 @@ googlemaps
 python-dotenv
 openai
 slowapi
-https://github.com/instructor-ai/instructor/tree/73a90619a6dd7be588e6047d5909f67393157c7d
+instructor
