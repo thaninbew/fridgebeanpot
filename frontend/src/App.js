@@ -6,7 +6,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import FridgePage from './pages/FridgePage';
 import Inventory from './pages/Inventory';
-import ClaimPage from './pages/ClaimPage';
+import ClaimPage from './pages/Claim/ClaimPage';
 import './App.css';
 import Profile from './pages/Profile/Profile';
 import Map from './pages/Explore/Map';
