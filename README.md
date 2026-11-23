@@ -1,5 +1,4 @@
-## fridge - 🥇 HackBeanpot 2025 Winner - Best UI/UX!!🥇
-# Lets GOOO!!!
+## fridge - 🥇 HackBeanpot 2025 Winner - Best UI/UX
 
 ### Amazing Team:
 - [Jolin Huang](https://www.linkedin.com/in/jolin-huang-7864b2257/)
